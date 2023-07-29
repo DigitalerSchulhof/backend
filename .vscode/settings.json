@@ -1,0 +1,27 @@
+{
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.js, ${capture}.map, ${capture}.d.ts, ${capture}.d.ts.map",
+    "tsconfig.json": "tsconfig.*.json, tsconfig.tsbuildinfo"
+  },
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "cSpell.words": [
+    "arango",
+    "Arango",
+    "firstname",
+    "Firstname",
+    "lastname",
+    "schoolyear",
+    "schoolyears",
+    "schulhof"
+  ],
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "colorize.languages": ["typescript"],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "prettier.prettierPath": "./node_modules/prettier"
+}

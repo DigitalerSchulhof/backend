@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "strict": true,
+    "module": "CommonJS",
+    "isolatedModules": true,
+    "noImplicitOverride": true,
+    "esModuleInterop": true,
+    "types": ["node", "jest"],
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*", "reset.d.ts"]
+}
