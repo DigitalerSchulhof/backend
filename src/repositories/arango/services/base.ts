@@ -1,8 +1,4 @@
-import {
-  ListResult,
-  SearchOptions,
-  WithId,
-} from '#/repositories/interfaces/base';
+import { ListResult } from '#/repositories/interfaces/base';
 import { MaybeArray } from '#/utils';
 import { Database } from 'arangojs';
 import * as aql from 'arangojs/aql';
@@ -17,6 +13,13 @@ export type WithKey<T> = T & {
   createdAt: number;
   updatedAt: number;
 };
+
+export interface SearchOptions<Base extends object> {
+  limit?: number;
+  offset?: number;
+  filter?: TypeFilter<Base>;
+  order?: string;
+}
 
 export type OverloadsForObject<
   Type extends object,
@@ -40,13 +43,13 @@ type OverloadsForScalar<Key, Type> = [Type] extends [number]
   ? [Key, 'eq' | 'neq' | 'gt' | 'lt', Type] | [Key, 'in' | 'nin', Type[]]
   : [Type] extends [string]
   ? [Key, 'eq' | 'neq' | 'like' | 'nlike', Type] | [Key, 'in' | 'nin', Type[]]
-  : [Type] extends [boolean | Buffer]
+  : [Type] extends [boolean | Buffer | Date]
   ? [Key, 'eq' | 'neq', Type]
   : [Type] extends [number | null]
   ? [Key, 'eq' | 'neq', Type] | [Key, 'in' | 'nin', Type[]]
   : [Type] extends [string | null]
   ? [Key, 'eq' | 'neq', Type] | [Key, 'in' | 'nin', Type[]]
-  : [Type] extends [boolean | Buffer | null]
+  : [Type] extends [boolean | Buffer | Date | null]
   ? [Key, 'eq' | 'neq', Type]
   : never;
 
@@ -77,18 +80,12 @@ export abstract class ArangoRepository<
 
   constructor(private readonly db: Database) {}
 
-  async search(query: SearchOptions<Base>): Promise<ListResult<WithId<Base>>> {
-    const res = await this.query<WithId<Base>>(
+  async search(query: SearchOptions<Base>): Promise<ListResult<WithKey<Base>>> {
+    const res = await this.query<WithKey<Base>>(
       aql.aql`
         FOR doc IN ${this.collectionNameLiteral}
           ${searchToArangoQuery(query)}
-          RETURN MERGE(
-            UNSET(doc, "_key", "_id", "_rev"),
-            {
-              id: doc._key,
-              rev: doc._rev
-            }
-          )
+          RETURN UNSET(doc, "_id")
       `,
       { fullCount: true }
     );
@@ -97,36 +94,24 @@ export abstract class ArangoRepository<
     return paginateCursor(res);
   }
 
-  async get(id: string): Promise<WithId<Base> | null> {
-    const res = await this.query<WithId<Base> | null>(
+  async get(id: string): Promise<WithKey<Base> | null> {
+    const res = await this.query<WithKey<Base> | null>(
       aql.aql`
         LET doc = DOCUMENT(${this.collectionNameLiteral}, ${id})
-        RETURN doc == null ? null : MERGE(
-          UNSET(doc, "_key", "_id", "_rev"),
-          {
-            id: doc._key,
-            rev: doc._rev
-          }
-        )
+        RETURN doc == null ? null : UNSET(doc, "_id")
       `
     );
     // Unscrew syntax highlighting ``);
 
-    return res.next() as Promise<WithId<Base> | null>;
+    return res.next() as Promise<WithKey<Base> | null>;
   }
 
-  async getByIds(ids: readonly string[]): Promise<(WithId<Base> | null)[]> {
-    const res = await this.query<WithId<Base> | null>(
+  async getByIds(ids: readonly string[]): Promise<(WithKey<Base> | null)[]> {
+    const res = await this.query<WithKey<Base> | null>(
       aql.aql`
         FOR id IN ${ids}
           LET doc = DOCUMENT(${this.collectionNameLiteral}, id)
-          RETURN doc == null ? null : MERGE(
-            UNSET(doc, "_key", "_id", "_rev"),
-            {
-              id: doc._key,
-              rev: doc._rev
-            }
-          )
+          RETURN doc == null ? null : UNSET(doc, "_id")
       `
     );
     // Unscrew syntax highlighting ``);
@@ -134,8 +119,8 @@ export abstract class ArangoRepository<
     return res.all();
   }
 
-  async create(post: Base): Promise<WithId<Base>> {
-    const res = await this.query<WithId<Base>>(
+  async create(post: Base): Promise<WithKey<Base>> {
+    const res = await this.query<WithKey<Base>>(
       aql.aql`
         INSERT MERGE(
           ${post},
@@ -145,13 +130,7 @@ export abstract class ArangoRepository<
           }
         ) INTO ${this.collectionNameLiteral}
 
-        RETURN MERGE(
-          UNSET(NEW, "_key", "_id", "_rev"),
-          {
-            id: NEW._key,
-            rev: NEW._rev
-          }
-        )
+        RETURN UNSET(NEW, "_id")
       `
     );
     // Unscrew syntax highlighting ``);
@@ -163,8 +142,8 @@ export abstract class ArangoRepository<
     id: string,
     patch: Partial<Base>,
     ifRev?: string
-  ): Promise<WithId<Base>> {
-    const res = await this.query<WithId<Base>>(
+  ): Promise<WithKey<Base>> {
+    const res = await this.query<WithKey<Base>>(
       aql.aql`
         UPDATE {
           _key: ${id},
@@ -178,13 +157,7 @@ export abstract class ArangoRepository<
             ifRev === undefined
           } }
 
-        RETURN MERGE(
-          UNSET(NEW, "_key", "_id", "_rev"),
-          {
-            id: NEW._key,
-            rev: NEW._rev
-          }
-        )
+        RETURN UNSET(NEW, "_id")
       `
     );
     // Unscrew syntax highlighting ``);
@@ -195,8 +168,8 @@ export abstract class ArangoRepository<
   async updateWhere(
     filter: TypeFilter<Base>,
     patch: Partial<Base>
-  ): Promise<WithId<Base>[]> {
-    const res = await this.query<WithId<Base>>(
+  ): Promise<WithKey<Base>[]> {
+    const res = await this.query<WithKey<Base>>(
       aql.aql`
         FOR doc IN ${this.collectionNameLiteral}
           ${filterToArangoQuery(filter)}
@@ -210,13 +183,7 @@ export abstract class ArangoRepository<
               }
             ) IN ${this.collectionNameLiteral}
 
-          RETURN MERGE(
-            UNSET(NEW, "_key", "_id", "_rev"),
-            {
-              id: NEW._key,
-              rev: NEW._rev
-            }
-          )
+          RETURN UNSET(NEW, "_id")
       `
     );
     // Unscrew syntax highlighting ``);
@@ -224,8 +191,8 @@ export abstract class ArangoRepository<
     return res.all();
   }
 
-  async delete(id: string, ifRev?: string): Promise<WithId<Base>> {
-    const res = await this.query<WithId<Base>>(
+  async delete(id: string, ifRev?: string): Promise<WithKey<Base>> {
+    const res = await this.query<WithKey<Base>>(
       aql.aql`
         REMOVE {
           _key: ${id},
@@ -233,13 +200,7 @@ export abstract class ArangoRepository<
           } IN ${this.collectionNameLiteral} OPTIONS { ignoreRevs: ${
             ifRev === undefined
           } }
-        RETURN MERGE(
-          UNSET(OLD, "_key", "_id", "_rev"),
-          {
-            id: OLD._key,
-            rev: OLD._rev
-          }
-        )
+        RETURN UNSET(OLD, "_id")
       `
     );
     // Unscrew syntax highlighting ``);
@@ -247,21 +208,15 @@ export abstract class ArangoRepository<
     return (await res.next())!;
   }
 
-  async deleteWhere(filter: TypeFilter<Base>): Promise<WithId<Base>[]> {
-    const res = await this.query<WithId<Base>>(
+  async deleteWhere(filter: TypeFilter<Base>): Promise<WithKey<Base>[]> {
+    const res = await this.query<WithKey<Base>>(
       aql.aql`
         FOR doc IN ${this.collectionNameLiteral}
           ${filterToArangoQuery(filter)}
 
           REMOVE doc IN ${this.collectionNameLiteral}
 
-          RETURN MERGE(
-            UNSET(OLD, "_key", "_id", "_rev"),
-            {
-              id: OLD._key,
-              rev: OLD._rev
-            }
-          )
+          RETURN UNSET(OLD, "_id")
       `
     );
     // Unscrew syntax highlighting ``);
@@ -327,7 +282,7 @@ export class AndFilter<Type extends object> {
 export class Filter<Type extends object = object> {
   property: string;
   operator: string;
-  value: MaybeArray<number | string | boolean | Buffer | null>;
+  value: MaybeArray<number | string | boolean | Buffer | Date | null>;
 
   constructor(...args: OverloadsForObject<Type>) {
     // @ts-expect-error -- Not sure
