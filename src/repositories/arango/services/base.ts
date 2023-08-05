@@ -30,7 +30,6 @@ export type OverloadsForObject<
         | number
         | string
         | boolean
-        | Buffer
         | null
         ? OverloadsForScalar<`${Path}${Key}`, Type[Key]>
         : Type[Key] extends object
@@ -43,13 +42,13 @@ type OverloadsForScalar<Key, Type> = [Type] extends [number]
   ? [Key, 'eq' | 'neq' | 'gt' | 'lt', Type] | [Key, 'in' | 'nin', Type[]]
   : [Type] extends [string]
   ? [Key, 'eq' | 'neq' | 'like' | 'nlike', Type] | [Key, 'in' | 'nin', Type[]]
-  : [Type] extends [boolean | Buffer | Date]
+  : [Type] extends [boolean]
   ? [Key, 'eq' | 'neq', Type]
   : [Type] extends [number | null]
   ? [Key, 'eq' | 'neq', Type] | [Key, 'in' | 'nin', Type[]]
   : [Type] extends [string | null]
   ? [Key, 'eq' | 'neq', Type] | [Key, 'in' | 'nin', Type[]]
-  : [Type] extends [boolean | Buffer | Date | null]
+  : [Type] extends [boolean | null]
   ? [Key, 'eq' | 'neq', Type]
   : never;
 
@@ -58,7 +57,6 @@ export type Serializable =
   | number
   | boolean
   | null
-  | Buffer
   | Serializable[]
   | {
       [key: string]: Serializable;
@@ -282,7 +280,7 @@ export class AndFilter<Type extends object> {
 export class Filter<Type extends object = object> {
   property: string;
   operator: string;
-  value: MaybeArray<number | string | boolean | Buffer | Date | null>;
+  value: MaybeArray<number | string | boolean | null>;
 
   constructor(...args: OverloadsForObject<Type>) {
     // @ts-expect-error -- Not sure

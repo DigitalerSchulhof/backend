@@ -66,7 +66,7 @@ export class ArangoAccountRepository implements AccountRepository {
   constructor(private readonly repository: AccountArangoRepository) {}
 
   async search(
-    options: SearchOptions
+    options: SearchOptions<js.Account>
   ): Promise<ListResult<WithId<js.Account>>> {
     const res = await this.repository.search({
       limit: options.limit,
