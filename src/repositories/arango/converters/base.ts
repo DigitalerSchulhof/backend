@@ -1,5 +1,5 @@
-import * as dbBase from '#/repositories/arango/services/base';
 import * as jsBase from '#/repositories/interfaces/base';
+import * as dbBase from '#/repositories/arango/services/base';
 
 export interface ArangoConverter<Db extends object, Js extends object> {
   /**

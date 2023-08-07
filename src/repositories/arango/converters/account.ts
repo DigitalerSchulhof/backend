@@ -1,8 +1,8 @@
+import type * as js from '#/interfaces/account';
+import * as jsBase from '#/repositories/interfaces/base';
 import type * as db from '#/repositories/arango/services/account';
 import * as dbBase from '#/repositories/arango/services/base';
-import type * as js from '#/repositories/interfaces/account';
-import * as jsBase from '#/repositories/interfaces/base';
-import { MaybeArray, isNotNullOrUndefined } from '#/utils';
+import { isNotNullOrUndefined } from '#/utils';
 import { ArangoConverter } from './base';
 
 export class AccountConverter
@@ -20,8 +20,8 @@ export class AccountConverter
     return {
       id: account._key,
       rev: account._rev,
-      updatedAt: account.updatedAt,
-      createdAt: account.createdAt,
+      updatedAt: new Date(account.updatedAt),
+      createdAt: new Date(account.createdAt),
       personId: account.personId,
       username: account.username,
       email: account.email,
@@ -85,13 +85,14 @@ export class AccountConverter
           .filter(isNotNullOrUndefined)
       );
     }
+
     const [property, operator, value] = filter.withTypes();
 
     switch (property) {
       case 'id':
-        return new dbBase.Filter('_key', operator, value);
+        return { property: '_key', operator, value };
       case 'rev':
-        return { property: 'rev', operator, value: value };
+        return { property: '_rev', operator, value };
       case 'updatedAt':
         return {
           property: 'updatedAt',
@@ -166,7 +167,7 @@ export class AccountConverter
           operator,
           value,
         };
-      case 'settings.consider_news.fileChanged':
+      case 'settings.considerNews.fileChanged':
         return {
           property: 'settings.considerNews.fileChanged',
           operator,

@@ -1,16 +1,11 @@
+import * as js from '#/interfaces/account';
+import { AccountRepository } from '#/interfaces/account';
+import { ListResult, SearchOptions, WithId } from '#/repositories/interfaces/base';
 import {
   accountFromJs,
   accountToJs,
 } from '#/repositories/arango/converters/account';
-import * as js from '#/repositories/interfaces/account';
-import { AccountRepository } from '#/repositories/interfaces/account';
-import {
-  ListResult,
-  SearchOptions,
-  WithId,
-} from '#/repositories/interfaces/base';
-import { MaybeArray, isNotNullOrUndefined } from '#/utils';
-import { AndFilter, ArangoRepository, OrFilter, TypeFilter } from './base';
+import { ArangoRepository } from './base';
 
 export type Account = {
   personId: string;
@@ -141,142 +136,5 @@ export class ArangoAccountRepository implements AccountRepository {
     const res = await this.repository.deleteWhere(filterFromGrpc(filter));
 
     return res.map((account) => accountToJs(account));
-  }
-}
-
-export function filterFromGrpc(filter: object): TypeFilter<Account>;
-export function filterFromGrpc(
-  filter: object | undefined
-): TypeFilter<Account> | undefined;
-export function filterFromGrpc(
-  filter: object | undefined
-): TypeFilter<Account> | undefined {
-  if (filter === undefined) return undefined;
-
-  return filterFromGrpcWorker(filter);
-}
-
-function filterFromGrpcWorker(
-  filter: object | undefined
-): TypeFilter<Account> | undefined {
-  if (filter === undefined) return undefined;
-
-  if ('and' in filter) {
-    return new AndFilter(
-      ...(filter.and as object[])
-        .map(filterFromGrpcWorker)
-        .filter(isNotNullOrUndefined)
-    );
-  }
-
-  if ('or' in filter) {
-    return new OrFilter(
-      ...(filter.or as object[])
-        .map(filterFromGrpcWorker)
-        .filter(isNotNullOrUndefined)
-    );
-  }
-
-  const { property, operator, value } = filter as {
-    property: string;
-    operator: string;
-    value: MaybeArray<string | number | boolean | Buffer | null>;
-  };
-
-  switch (property) {
-    case 'id':
-      return { property: 'id', operator, value };
-    case 'rev':
-      return { property: 'rev', operator, value };
-    case 'updated_at':
-      return { property: 'updatedAt', operator, value };
-    case 'created_at':
-      return { property: 'createdAt', operator, value };
-    case 'person_id':
-      return { property: 'personId', operator, value };
-    case 'username':
-      return { property: 'username', operator, value };
-    case 'email':
-      return { property: 'email', operator, value };
-    case 'password':
-      return {
-        property: 'password',
-        operator,
-        value: Buffer.from(value as string, 'base64'),
-      };
-    case 'salt':
-      return {
-        property: 'salt',
-        operator,
-        value: Buffer.from(value as string, 'base64'),
-      };
-    case 'password_expires_at':
-      return {
-        property: 'passwordExpiresAt',
-        operator,
-        value: new Date(value as number),
-      };
-    case 'lastLogin':
-      return {
-        property: 'last_login',
-        operator,
-        value: new Date(value as number),
-      };
-    case 'secondLastLogin':
-      return {
-        property: 'second_last_login',
-        operator,
-        value: new Date(value as number),
-      };
-    case 'settings.email_on.new_message':
-      return { property: 'settings.emailOn.newMessage', operator, value };
-    case 'settings.email_on.new_substitution':
-      return {
-        property: 'settings.emailOn.newSubstitution',
-        operator,
-        value,
-      };
-    case 'settings.email_on.new_news':
-      return { property: 'settings.emailOn.newNews', operator, value };
-    case 'settings.push_on.new_message':
-      return { property: 'settings.pushOn.newMessage', operator, value };
-    case 'settings.push_on.new_substitution':
-      return { property: 'settings.pushOn.newSubstitution', operator, value };
-    case 'settings.push_on.new_news':
-      return { property: 'settings.pushOn.newNews', operator, value };
-    case 'settings.consider_news.new_event':
-      return { property: 'settings.considerNews.newEvent', operator, value };
-    case 'settings.consider_news.new_blog':
-      return { property: 'settings.considerNews.newBlog', operator, value };
-    case 'settings.consider_news.new_gallery':
-      return {
-        property: 'settings.considerNews.newGallery',
-        operator,
-        value,
-      };
-    case 'settings.consider_news.file_changed':
-      return {
-        property: 'settings.considerNews.fileChanged',
-        operator,
-        value,
-      };
-    case 'settings.mailbox.delete_after':
-      return { property: 'settings.mailbox.deleteAfter', operator, value };
-    case 'settings.mailbox.delete_after_in_bin':
-      return {
-        property: 'settings.mailbox.deleteAfterInBin',
-        operator,
-        value,
-      };
-    case 'settings.profile.session_timeout':
-      return { property: 'settings.profile.sessionTimeout', operator, value };
-    case 'settings.profile.form_of_address':
-      return {
-        property: 'settings.profile.formOfAddress',
-        operator,
-        value,
-      };
-    default:
-      throw new Error('Invariant: Unknown property in filter');
   }
 }

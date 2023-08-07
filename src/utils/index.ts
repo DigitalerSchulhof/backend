@@ -13,3 +13,12 @@ export type MaybeArray<T> = T | T[];
 export function isNotNullOrUndefined<T>(val: T | null | undefined): val is T {
   return val !== null && val !== undefined;
 }
+
+/**
+ * Returns whether the given `PromiseSettledResult` is a `PromiseRejectedResult`.
+ */
+export function isPromiseRejectedResult(
+  val: PromiseSettledResult<unknown>
+): val is PromiseRejectedResult {
+  return val.status === 'rejected';
+}
