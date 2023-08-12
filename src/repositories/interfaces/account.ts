@@ -1,5 +1,5 @@
-import { Account } from '#/services/interfaces/account';
-import { WithId } from '#/services/interfaces/base';
+import { Account } from '#/services/account';
+import { WithId } from '#/services/base';
 import type { BaseRepository } from './base';
 
 export interface AccountRepository extends BaseRepository<Account> {

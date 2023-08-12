@@ -1,33 +1,29 @@
-import * as jsBase from '#/repositories/interfaces/base';
-import * as dbBase from '#/repositories/arango/services/base';
+import type * as arangoBase from '#/repositories/arango/services/base';
+import type * as jsBase from '#/services/base';
 
-export interface ArangoConverter<Db extends object, Js extends object> {
-  /**
-   * Convert the object that comes from Arango into its JS form.
-   *
-   * This most often means deserializing `Buffer`s and `Date`s
-   *
-   * @see fromJs
-   */
-  toJs(db: dbBase.WithKey<Db>): jsBase.WithId<Js>;
-  toJs(db: dbBase.WithKey<Db> | null): jsBase.WithId<Js> | null;
+export function idFromArango(
+  id: arangoBase.WithKey<unknown>
+): jsBase.WithId<unknown> {
+  return {
+    id: id._key,
+    rev: id._rev,
+    updatedAt: new Date(id.updatedAt),
+    createdAt: new Date(id.createdAt),
+  };
+}
 
-  /**
-   * Converts an object in JS form to what is stored in Arango.
-   *
-   * This most often means serializing `Buffer`s and `Date`s
-   *
-   * @see toJs
-   */
-  fromJs(js: Js): Db;
-  fromJs(js: Partial<Js>): Partial<Db>;
+export function dateFromArango(date: number): Date {
+  return new Date(date);
+}
 
-  /**
-   * Convert a filter with JS Types into one for Arango
-   *
-   * This most often means serializing `Buffer`s and `Date`s
-   */
-  filterFromJs(
-    filter: jsBase.TypeFilter<Js> | undefined
-  ): dbBase.TypeFilter<Db> | undefined;
+export function bufferFromArango(buffer: string): Buffer {
+  return Buffer.from(buffer, 'base64');
+}
+
+export function dateToArango(date: Date): number {
+  return date.getTime();
+}
+
+export function bufferToArango(buffer: Buffer): string {
+  return buffer.toString('base64');
 }

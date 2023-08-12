@@ -39,7 +39,13 @@
 
     // Want these
     "@typescript-eslint/explicit-module-boundary-types": "warn",
-    "@typescript-eslint/naming-convention": "warn",
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      {
+        "selector": "enumMember",
+        "format": ["PascalCase"]
+      }
+    ],
     "@typescript-eslint/switch-exhaustiveness-check": "warn",
     "prefer-template": "error"
   },
@@ -51,9 +57,9 @@
       }
     },
     {
-      "files": ["./src/grpc/**/*.ts"],
+      "files": ["./src/{repositories/arango,services/rest}/converters/*.ts"],
       "rules": {
-        "@typescript-eslint/naming-convention": "off"
+        "no-fallthrough": "off"
       }
     }
   ]

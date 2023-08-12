@@ -1,10 +1,10 @@
 import { AccountPermissionHandler } from '#/permissions/account';
 import { AccountRepository } from '#/repositories/interfaces/account';
-import { RequestContext } from '#/server';
 import { AccountValidator } from '#/validators/account';
 import {
   BaseService,
   ListResult,
+  RequestContext,
   SearchOptions,
   TypeFilter,
   WithId,
@@ -53,8 +53,10 @@ export type AccountSettingsProfile = {
   formOfAddress: FormOfAddress;
 };
 
-export const FORMS_OF_ADDRESS = ['formal', 'informal'] as const;
-export type FormOfAddress = (typeof FORMS_OF_ADDRESS)[number];
+export enum FormOfAddress {
+  Formal,
+  Informal,
+}
 
 export class AccountService extends BaseService<Account> {
   constructor(
@@ -67,7 +69,7 @@ export class AccountService extends BaseService<Account> {
 
   override async search(
     context: RequestContext,
-    options: SearchOptions<Account>
+    options: SearchOptions<WithId<Account>>
   ): Promise<ListResult<WithId<Account>>> {
     await this.permissionHandler.assertMaySearch(context);
 
@@ -80,7 +82,7 @@ export class AccountService extends BaseService<Account> {
   ): Promise<(WithId<Account> | null)[]> {
     await this.permissionHandler.assertMayGet(context, ids);
 
-    return this.repository.getByIds(ids);
+    return this.repository.get(ids);
   }
 
   override async create(

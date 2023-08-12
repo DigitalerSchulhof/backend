@@ -1,5 +1,4 @@
-import { ListResult } from '#/repositories/interfaces/base';
-import { MaybeArray } from '#/utils';
+import { ListResult } from '#/services/base';
 import { Database } from 'arangojs';
 import * as aql from 'arangojs/aql';
 import { DocumentCollection } from 'arangojs/collection';
@@ -20,37 +19,6 @@ export interface SearchOptions<Base extends object> {
   filter?: TypeFilter<Base>;
   order?: string;
 }
-
-export type OverloadsForObject<
-  Type extends object,
-  Path extends string = '',
-> = Type extends unknown
-  ? {
-      [Key in keyof Type & string]: Type[Key] extends
-        | number
-        | string
-        | boolean
-        | null
-        ? OverloadsForScalar<`${Path}${Key}`, Type[Key]>
-        : Type[Key] extends object
-        ? OverloadsForObject<Type[Key], `${Path}${Key}.`>
-        : never;
-    }[keyof Type & string]
-  : never;
-
-type OverloadsForScalar<Key, Type> = [Type] extends [number]
-  ? [Key, 'eq' | 'neq' | 'gt' | 'lt', Type] | [Key, 'in' | 'nin', Type[]]
-  : [Type] extends [string]
-  ? [Key, 'eq' | 'neq' | 'like' | 'nlike', Type] | [Key, 'in' | 'nin', Type[]]
-  : [Type] extends [boolean]
-  ? [Key, 'eq' | 'neq', Type]
-  : [Type] extends [number | null]
-  ? [Key, 'eq' | 'neq', Type] | [Key, 'in' | 'nin', Type[]]
-  : [Type] extends [string | null]
-  ? [Key, 'eq' | 'neq', Type] | [Key, 'in' | 'nin', Type[]]
-  : [Type] extends [boolean | null]
-  ? [Key, 'eq' | 'neq', Type]
-  : never;
 
 export type Serializable =
   | string
@@ -78,7 +46,9 @@ export abstract class ArangoRepository<
 
   constructor(private readonly db: Database) {}
 
-  async search(query: SearchOptions<Base>): Promise<ListResult<WithKey<Base>>> {
+  async search(
+    query: SearchOptions<WithKey<Base>>
+  ): Promise<ListResult<WithKey<Base>>> {
     const res = await this.query<WithKey<Base>>(
       aql.aql`
         FOR doc IN ${this.collectionNameLiteral}
@@ -92,19 +62,7 @@ export abstract class ArangoRepository<
     return paginateCursor(res);
   }
 
-  async get(id: string): Promise<WithKey<Base> | null> {
-    const res = await this.query<WithKey<Base> | null>(
-      aql.aql`
-        LET doc = DOCUMENT(${this.collectionNameLiteral}, ${id})
-        RETURN doc == null ? null : UNSET(doc, "_id")
-      `
-    );
-    // Unscrew syntax highlighting ``);
-
-    return res.next() as Promise<WithKey<Base> | null>;
-  }
-
-  async getByIds(ids: readonly string[]): Promise<(WithKey<Base> | null)[]> {
+  async get(ids: readonly string[]): Promise<(WithKey<Base> | null)[]> {
     const res = await this.query<WithKey<Base> | null>(
       aql.aql`
         FOR id IN ${ids}
@@ -164,13 +122,16 @@ export abstract class ArangoRepository<
   }
 
   async updateWhere(
-    filter: TypeFilter<Base>,
+    filter: TypeFilter<WithKey<Base>>,
     patch: Partial<Base>
   ): Promise<WithKey<Base>[]> {
     const res = await this.query<WithKey<Base>>(
       aql.aql`
         FOR doc IN ${this.collectionNameLiteral}
-          ${filterToArangoQuery(filter)}
+          ${
+            // Not sure what's up
+            filterToArangoQuery(filter as TypeFilter<object>)
+          }
 
           UPDATE {
             _key: doc._key,
@@ -206,11 +167,16 @@ export abstract class ArangoRepository<
     return (await res.next())!;
   }
 
-  async deleteWhere(filter: TypeFilter<Base>): Promise<WithKey<Base>[]> {
+  async deleteWhere(
+    filter: TypeFilter<WithKey<Base>>
+  ): Promise<WithKey<Base>[]> {
     const res = await this.query<WithKey<Base>>(
       aql.aql`
         FOR doc IN ${this.collectionNameLiteral}
-          ${filterToArangoQuery(filter)}
+          ${
+            // Not sure what's up
+            filterToArangoQuery(filter as TypeFilter<object>)
+          }
 
           REMOVE doc IN ${this.collectionNameLiteral}
 
@@ -261,38 +227,64 @@ export abstract class ArangoRepository<
   }
 }
 
-export class OrFilter<Type extends object> {
-  filters;
-
-  constructor(...filters: TypeFilter<Type>[]) {
-    this.filters = filters;
-  }
-}
-
-export class AndFilter<Type extends object> {
-  filters;
-
-  constructor(...filters: TypeFilter<Type>[]) {
-    this.filters = filters;
-  }
-}
-
-export class Filter<Type extends object = object> {
-  property: string;
-  operator: string;
-  value: MaybeArray<number | string | boolean | null>;
-
-  constructor(...args: OverloadsForObject<Type>) {
-    // @ts-expect-error -- Not sure
-    [this.property, this.operator, this.value] = args;
-  }
-}
-
 export type TypeFilter<Type extends object> =
   | OrFilter<Type>
   | AndFilter<Type>
   | Filter<Type>
   | null;
+
+type OrFilter<Type extends object> = {
+  or: TypeFilter<Type>[];
+};
+
+type AndFilter<Type extends object> = {
+  and: TypeFilter<Type>[];
+};
+
+type Filter<Type extends object> = FilterWorker<Type>;
+
+export type FilterWorker<
+  Type extends object,
+  Path extends string = '',
+> = Type extends unknown
+  ? {
+      [Key in keyof Type & string]: Type[Key] extends
+        | number
+        | string
+        | boolean
+        | null
+        ? FiltersForProperty<`${Path}${Key}`, Type[Key]>
+        : Type[Key] extends object
+        ? FilterWorker<Type[Key], `${Path}${Key}.`>
+        : never;
+    }[keyof Type & string]
+  : never;
+
+type FiltersForProperty<Key, Type> = [Type] extends [number]
+  ?
+      | { property: Key; operator: 'eq' | 'neq' | 'gt' | 'lt'; value: Type }
+      | { property: Key; operator: 'in' | 'nin'; value: Type[] }
+  : [Type] extends [string]
+  ?
+      | {
+          property: Key;
+          operator: 'eq' | 'neq' | 'like' | 'nlike';
+          value: Type;
+        }
+      | { property: Key; operator: 'in' | 'nin'; value: Type[] }
+  : [Type] extends [boolean]
+  ? { property: Key; operator: 'eq' | 'neq'; value: Type }
+  : [Type] extends [number | null]
+  ?
+      | { property: Key; operator: 'eq' | 'neq'; value: Type }
+      | { property: Key; operator: 'in' | 'nin'; value: Type[] }
+  : [Type] extends [string | null]
+  ?
+      | { property: Key; operator: 'eq' | 'neq'; value: Type }
+      | { property: Key; operator: 'in' | 'nin'; value: Type }
+  : [Type] extends [boolean | null]
+  ? { property: Key; operator: 'eq' | 'neq'; value: Type }
+  : never;
 
 export async function paginateCursor<T>(
   cursor: ArrayCursor<T>
@@ -329,8 +321,9 @@ function searchToArangoQuery(
 ): aql.GeneratedAqlQuery {
   const { filter, order, limit = DEFAULT_LIMIT, offset = 0 } = search;
 
-  const filterQuery = filterToArangoQuery(filter);
-  const sortQuery = orderToArangoQuery(order);
+  const filterQuery =
+    filter === undefined ? undefined : filterToArangoQuery(filter);
+  const sortQuery = order === undefined ? undefined : orderToArangoQuery(order);
 
   return aql.aql`
     ${filterQuery}
@@ -341,11 +334,9 @@ function searchToArangoQuery(
 }
 
 function filterToArangoQuery(
-  filter: TypeFilter<object> | undefined
-): aql.GeneratedAqlQuery | undefined {
+  filter: TypeFilter<object>
+): aql.GeneratedAqlQuery {
   const res = filterToArangoQueryWorker(filter);
-
-  if (!res) return undefined;
 
   return aql.aql`
     FILTER ${res}
@@ -354,20 +345,20 @@ function filterToArangoQuery(
 }
 
 function filterToArangoQueryWorker(
-  filter: TypeFilter<object> | undefined
-): aql.GeneratedAqlQuery | undefined {
-  if (!filter) return undefined;
+  filter: TypeFilter<object>
+): aql.GeneratedAqlQuery {
+  if (filter === null) return aql.aql`TRUE`;
 
-  if (filter instanceof AndFilter) {
+  if ('or' in filter) {
     return aql.aql`
-      ${aql.join(filter.filters.map(filterToArangoQueryWorker), ' AND ')}
+      ${aql.join(filter.or.map(filterToArangoQueryWorker), ' OR ')}
     `;
     // Unscrew syntax highlighting ``;
   }
 
-  if (filter instanceof OrFilter) {
+  if ('and' in filter) {
     return aql.aql`
-      ${aql.join(filter.filters.map(filterToArangoQueryWorker), ' OR ')}
+      ${aql.join(filter.and.map(filterToArangoQueryWorker), ' AND ')}
     `;
     // Unscrew syntax highlighting ``;
   }
@@ -380,11 +371,7 @@ function filterToArangoQueryWorker(
   // Unscrew syntax highlighting ``;
 }
 
-function orderToArangoQuery(
-  order: string | undefined
-): aql.GeneratedAqlQuery | undefined {
-  if (!order) return undefined;
-
+function orderToArangoQuery(order: string): aql.GeneratedAqlQuery {
   const parts = order.split(',').map((part) => part.trim());
 
   return aql.aql`

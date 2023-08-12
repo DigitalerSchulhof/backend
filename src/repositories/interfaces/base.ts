@@ -3,9 +3,7 @@ import { ListResult, SearchOptions, TypeFilter, WithId } from '#/services/base';
 export interface BaseRepository<Base extends object> {
   search(options: SearchOptions<Base>): Promise<ListResult<WithId<Base>>>;
 
-  get(id: string): Promise<WithId<Base> | null>;
-
-  getByIds(ids: readonly string[]): Promise<(WithId<Base> | null)[]>;
+  get(ids: readonly string[]): Promise<(WithId<Base> | null)[]>;
 
   create(data: Base): Promise<WithId<Base>>;
 

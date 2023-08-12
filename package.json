@@ -15,9 +15,6 @@
     "pnpm": "8"
   },
   "dependencies": {
-    "@dsh/protocols": "link:../protocols/clients/ts/dist",
-    "@grpc/grpc-js": "1.9.0",
-    "@isaacs/ttlcache": "1.4.1",
     "arangojs": "8.4.0",
     "koa": "2.14.2",
     "ms": "2.1.3",

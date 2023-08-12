@@ -1,4 +1,4 @@
-import { Account, AccountSettings } from '#/services/interfaces/account';
+import { Account, AccountSettings } from '#/services/account';
 import { IdNotFoundError, InputValidationError } from '#/utils/errors';
 import { BaseValidator, aggregateValidationErrors } from './base';
 

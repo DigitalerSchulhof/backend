@@ -1,4 +1,4 @@
-import { Account } from '#/interfaces/account';
+import { Account } from '#/services/account';
 import { BasePermissionHandler } from './base';
 
 export interface AccountPermissionHandler

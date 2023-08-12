@@ -1,7 +1,6 @@
 import { Parse, v } from 'vality';
 import { loadEnv } from 'vality-env';
 
-/* eslint-disable @typescript-eslint/naming-convention */
 const configSchema = {
   appEnv: v.string({
     default: 'local',
@@ -10,7 +9,6 @@ const configSchema = {
     default: 8080,
   }),
 } as const;
-/* eslint-enable @typescript-eslint/naming-convention */
 
 export type Config = Parse<typeof configSchema>;
 

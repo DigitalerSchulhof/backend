@@ -1,5 +1,4 @@
-import { SearchOptions } from '#/repositories/interfaces/base';
-import { RequestContext } from '#/server';
+import { RequestContext, SearchOptions } from '#/services/base';
 
 export abstract class BasePermissionHandler<Base extends object> {
   abstract assertMaySearch(

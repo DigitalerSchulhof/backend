@@ -1,196 +1,351 @@
-import type * as js from '#/interfaces/account';
-import * as jsBase from '#/repositories/interfaces/base';
 import type * as db from '#/repositories/arango/services/account';
-import * as dbBase from '#/repositories/arango/services/base';
-import { isNotNullOrUndefined } from '#/utils';
-import { ArangoConverter } from './base';
+import type * as dbBase from '#/repositories/arango/services/base';
+import * as js from '#/services/account';
+import type * as jsBase from '#/services/base';
+import { FilterError } from '#/utils/errors';
+import {
+  bufferFromArango,
+  bufferToArango,
+  dateFromArango,
+  dateToArango,
+  idFromArango,
+} from './base';
 
-export class AccountConverter
-  implements ArangoConverter<db.Account, js.Account>
-{
-  toJs(account: dbBase.WithKey<db.Account>): jsBase.WithId<js.Account>;
-  toJs(
-    account: dbBase.WithKey<db.Account> | null
-  ): jsBase.WithId<js.Account> | null;
-  toJs(
-    account: dbBase.WithKey<db.Account> | null
-  ): jsBase.WithId<js.Account> | null {
-    if (account === null) return null;
+export function accountFromArango(
+  account: dbBase.WithKey<db.Account>
+): jsBase.WithId<js.Account> {
+  return {
+    ...idFromArango(account),
+    personId: account.personId,
+    username: account.username,
+    email: account.email,
+    password: bufferFromArango(account.password),
+    salt: bufferFromArango(account.salt),
+    passwordExpiresAt:
+      account.passwordExpiresAt === null
+        ? null
+        : dateFromArango(account.passwordExpiresAt),
+    lastLogin:
+      account.lastLogin === null ? null : dateFromArango(account.lastLogin),
+    secondLastLogin:
+      account.secondLastLogin === null
+        ? null
+        : dateFromArango(account.secondLastLogin),
+    settings: accountSettingsFromArango(account.settings),
+  };
+}
 
+function accountSettingsFromArango(
+  accountSettings: db.AccountSettings
+): js.AccountSettings {
+  return {
+    emailOn: accountSettingsNotifyOnFromArango(accountSettings.emailOn),
+    pushOn: accountSettingsNotifyOnFromArango(accountSettings.pushOn),
+    considerNews: accountSettingsConsiderNewsFromArango(
+      accountSettings.considerNews
+    ),
+    mailbox: accountSettingsMailboxFromArango(accountSettings.mailbox),
+    profile: accountSettingsProfileFromArango(accountSettings.profile),
+  };
+}
+
+function accountSettingsNotifyOnFromArango(
+  accountSettingsNotifyOn: db.AccountSettingsNotifyOn
+): js.AccountSettingsNotifyOn {
+  return {
+    newMessage: accountSettingsNotifyOn.newMessage,
+    newSubstitution: accountSettingsNotifyOn.newSubstitution,
+    newNews: accountSettingsNotifyOn.newNews,
+  };
+}
+
+function accountSettingsConsiderNewsFromArango(
+  accountSettingsConsiderNews: db.AccountSettingsConsiderNews
+): js.AccountSettingsConsiderNews {
+  return {
+    newEvent: accountSettingsConsiderNews.newEvent,
+    newBlog: accountSettingsConsiderNews.newBlog,
+    newGallery: accountSettingsConsiderNews.newGallery,
+    fileChanged: accountSettingsConsiderNews.fileChanged,
+  };
+}
+
+function accountSettingsMailboxFromArango(
+  accountSettingsMailbox: db.AccountSettingsMailbox
+): js.AccountSettingsMailbox {
+  return {
+    deleteAfter: accountSettingsMailbox.deleteAfter,
+    deleteAfterInBin: accountSettingsMailbox.deleteAfterInBin,
+  };
+}
+
+function accountSettingsProfileFromArango(
+  accountSettingsProfile: db.AccountSettingsProfile
+): js.AccountSettingsProfile {
+  return {
+    sessionTimeout: accountSettingsProfile.sessionTimeout,
+    formOfAddress: formOfAddressFromArango(
+      accountSettingsProfile.formOfAddress
+    ),
+  };
+}
+
+function formOfAddressFromArango(
+  formOfAddress: db.FormOfAddress
+): js.FormOfAddress {
+  switch (formOfAddress) {
+    case 'formal':
+      return js.FormOfAddress.Formal;
+    case 'informal':
+      return js.FormOfAddress.Informal;
+  }
+}
+
+export function accountToArango(account: js.Account): db.Account;
+export function accountToArango(
+  account: Partial<js.Account>
+): Partial<db.Account>;
+export function accountToArango(
+  account: Partial<js.Account>
+): Partial<db.Account> {
+  return {
+    personId: account.personId,
+    username: account.username,
+    email: account.email,
+    password:
+      account.password === undefined
+        ? undefined
+        : bufferToArango(account.password),
+    salt: account.salt === undefined ? undefined : bufferToArango(account.salt),
+    passwordExpiresAt:
+      account.passwordExpiresAt === null
+        ? null
+        : account.passwordExpiresAt === undefined
+        ? undefined
+        : dateToArango(account.passwordExpiresAt),
+    lastLogin:
+      account.lastLogin === null
+        ? null
+        : account.lastLogin === undefined
+        ? undefined
+        : dateToArango(account.lastLogin),
+    secondLastLogin:
+      account.secondLastLogin === null
+        ? null
+        : account.secondLastLogin === undefined
+        ? undefined
+        : dateToArango(account.secondLastLogin),
+    settings:
+      account.settings === undefined
+        ? undefined
+        : accountSettingsToArango(account.settings),
+  };
+}
+
+function accountSettingsToArango(
+  accountSettings: js.AccountSettings
+): db.AccountSettings {
+  return {
+    emailOn: accountSettingsNotifyOnToArango(accountSettings.emailOn),
+    pushOn: accountSettingsNotifyOnToArango(accountSettings.pushOn),
+    considerNews: accountSettingsConsiderNewsToArango(
+      accountSettings.considerNews
+    ),
+    mailbox: accountSettingsMailboxToArango(accountSettings.mailbox),
+    profile: accountSettingsProfileToArango(accountSettings.profile),
+  };
+}
+
+function accountSettingsNotifyOnToArango(
+  accountSettingsNotifyOn: js.AccountSettingsNotifyOn
+): db.AccountSettingsNotifyOn {
+  return {
+    newMessage: accountSettingsNotifyOn.newMessage,
+    newSubstitution: accountSettingsNotifyOn.newSubstitution,
+    newNews: accountSettingsNotifyOn.newNews,
+  };
+}
+
+function accountSettingsConsiderNewsToArango(
+  accountSettingsConsiderNews: js.AccountSettingsConsiderNews
+): db.AccountSettingsConsiderNews {
+  return {
+    newEvent: accountSettingsConsiderNews.newEvent,
+    newBlog: accountSettingsConsiderNews.newBlog,
+    newGallery: accountSettingsConsiderNews.newGallery,
+    fileChanged: accountSettingsConsiderNews.fileChanged,
+  };
+}
+
+function accountSettingsMailboxToArango(
+  accountSettingsMailbox: js.AccountSettingsMailbox
+): db.AccountSettingsMailbox {
+  return {
+    deleteAfter: accountSettingsMailbox.deleteAfter,
+    deleteAfterInBin: accountSettingsMailbox.deleteAfterInBin,
+  };
+}
+
+function accountSettingsProfileToArango(
+  accountSettingsProfile: js.AccountSettingsProfile
+): db.AccountSettingsProfile {
+  return {
+    sessionTimeout: accountSettingsProfile.sessionTimeout,
+    formOfAddress: formOfAddressToArango(accountSettingsProfile.formOfAddress),
+  };
+}
+
+function formOfAddressToArango(
+  formOfAddress: js.FormOfAddress
+): db.FormOfAddress {
+  switch (formOfAddress) {
+    case js.FormOfAddress.Formal:
+      return 'formal';
+    case js.FormOfAddress.Informal:
+      return 'informal';
+  }
+}
+
+export function accountFilterToArango(
+  filter: jsBase.TypeFilter<jsBase.WithId<js.Account>>
+): dbBase.TypeFilter<dbBase.WithKey<db.Account>> {
+  if (filter === null) return null;
+
+  if ('or' in filter) {
     return {
-      id: account._key,
-      rev: account._rev,
-      updatedAt: new Date(account.updatedAt),
-      createdAt: new Date(account.createdAt),
-      personId: account.personId,
-      username: account.username,
-      email: account.email,
-      password: Buffer.from(account.password, 'base64'),
-      salt: Buffer.from(account.salt, 'base64'),
-      passwordExpiresAt:
-        account.passwordExpiresAt === null
-          ? null
-          : new Date(account.passwordExpiresAt),
-      lastLogin:
-        account.lastLogin === null ? null : new Date(account.lastLogin),
-      secondLastLogin:
-        account.secondLastLogin === null
-          ? null
-          : new Date(account.secondLastLogin),
-      settings: account.settings,
+      or: filter.or.map((f) => accountFilterToArango(f)),
     };
   }
 
-  fromJs(account: js.Account): db.Account;
-  fromJs(account: Partial<js.Account>): Partial<db.Account>;
-  fromJs(account: Partial<js.Account>): Partial<db.Account> {
+  if ('and' in filter) {
     return {
-      personId: account.personId,
-      username: account.username,
-      email: account.email,
-      password: account.password?.toString('base64'),
-      salt: account.salt?.toString('base64'),
-      passwordExpiresAt:
-        account.passwordExpiresAt === null
-          ? null
-          : account.passwordExpiresAt?.getTime(),
-      lastLogin:
-        account.lastLogin === null ? null : account.lastLogin?.getTime(),
-      secondLastLogin:
-        account.secondLastLogin === null
-          ? null
-          : account.secondLastLogin?.getTime(),
-      settings: account.settings,
+      and: filter.and.map((f) => accountFilterToArango(f)),
     };
   }
 
-  filterFromJs(
-    filter: jsBase.TypeFilter<jsBase.WithId<js.Account>> | undefined
-  ): dbBase.TypeFilter<dbBase.WithKey<db.Account>> | undefined {
-    if (filter === undefined) return undefined;
-    if (filter === null) return null;
+  const { property, operator, value } = filter;
 
-    if (filter instanceof jsBase.AndFilter) {
-      return new dbBase.AndFilter(
-        ...filter.filters
-          .map((f) => this.filterFromJs(f))
-          .filter(isNotNullOrUndefined)
-      );
-    }
-
-    if (filter instanceof jsBase.OrFilter) {
-      return new dbBase.OrFilter(
-        ...filter.filters
-          .map((f) => this.filterFromJs(f))
-          .filter(isNotNullOrUndefined)
-      );
-    }
-
-    const [property, operator, value] = filter.withTypes();
-
-    switch (property) {
-      case 'id':
-        return { property: '_key', operator, value };
-      case 'rev':
-        return { property: '_rev', operator, value };
-      case 'updatedAt':
-        return {
-          property: 'updatedAt',
-          operator,
-          value: value.getTime(),
-        };
-      case 'createdAt':
-        return {
-          property: 'createdAt',
-          operator,
-          value: value.getTime(),
-        };
-      case 'personId':
-        return { property: 'personId', operator, value };
-      case 'username':
-        return { property: 'username', operator, value };
-      case 'email':
-        return { property: 'email', operator, value };
-      case 'password':
-        return {
-          property: 'password',
-          operator,
-          value: value.toString('base64'),
-        };
-      case 'salt':
-        return {
-          property: 'salt',
-          operator,
-          value: value.toString('base64'),
-        };
-      case 'passwordExpiresAt':
-        return {
-          property: 'passwordExpiresAt',
-          operator,
-          value: value === null ? null : value.getTime(),
-        };
-      case 'lastLogin':
-        return {
-          property: 'lastLogin',
-          operator,
-          value: value === null ? null : value.getTime(),
-        };
-      case 'secondLastLogin':
-        return {
-          property: 'secondLastLogin',
-          operator,
-          value: value === null ? null : value.getTime(),
-        };
-      case 'settings.emailOn.newMessage':
-        return { property: 'settings.emailOn.newMessage', operator, value };
-      case 'settings.emailOn.newSubstitution':
-        return {
-          property: 'settings.emailOn.newSubstitution',
-          operator,
-          value,
-        };
-      case 'settings.emailOn.newNews':
-        return { property: 'settings.emailOn.newNews', operator, value };
-      case 'settings.pushOn.newMessage':
-        return { property: 'settings.pushOn.newMessage', operator, value };
-      case 'settings.pushOn.newSubstitution':
-        return { property: 'settings.pushOn.newSubstitution', operator, value };
-      case 'settings.pushOn.newNews':
-        return { property: 'settings.pushOn.newNews', operator, value };
-      case 'settings.considerNews.newEvent':
-        return { property: 'settings.considerNews.newEvent', operator, value };
-      case 'settings.considerNews.newBlog':
-        return { property: 'settings.considerNews.newBlog', operator, value };
-      case 'settings.considerNews.newGallery':
-        return {
-          property: 'settings.considerNews.newGallery',
-          operator,
-          value,
-        };
-      case 'settings.considerNews.fileChanged':
-        return {
-          property: 'settings.considerNews.fileChanged',
-          operator,
-          value,
-        };
-      case 'settings.mailbox.deleteAfter':
-        return { property: 'settings.mailbox.deleteAfter', operator, value };
-      case 'settings.mailbox.deleteAfterInBin':
-        return {
-          property: 'settings.mailbox.deleteAfterInBin',
-          operator,
-          value,
-        };
-      case 'settings.profile.sessionTimeout':
-        return { property: 'settings.profile.sessionTimeout', operator, value };
-      case 'settings.profile.formOfAddress':
-        return {
-          property: 'settings.profile.formOfAddress',
-          operator,
-          value,
-        };
-      default:
-        throw new Error('Invariant: Unknown property in filter');
-    }
+  switch (property) {
+    case 'id':
+      switch (operator) {
+        case 'eq':
+        case 'neq':
+        case 'like':
+        case 'nlike':
+          return {
+            property: '_key',
+            operator,
+            value,
+          };
+        case 'in':
+        case 'nin':
+          return {
+            property: '_key',
+            operator,
+            value,
+          };
+      }
+    case 'rev':
+      switch (operator) {
+        case 'eq':
+        case 'neq':
+        case 'like':
+        case 'nlike':
+          return {
+            property: '_rev',
+            operator,
+            value,
+          };
+        case 'in':
+        case 'nin':
+          return {
+            property: '_rev',
+            operator,
+            value,
+          };
+      }
+    case 'updatedAt':
+    case 'createdAt':
+      switch (operator) {
+        case 'eq':
+        case 'neq':
+        case 'gt':
+        case 'lt':
+          return {
+            property,
+            operator,
+            value: dateToArango(value),
+          };
+        case 'in':
+        case 'nin':
+          return {
+            property,
+            operator,
+            value: value.map((v) => dateToArango(v)),
+          };
+      }
+    case 'personId':
+    case 'username':
+    case 'email':
+      return filter;
+    case 'password':
+    case 'salt':
+      switch (operator) {
+        case 'eq':
+        case 'neq':
+          return {
+            property,
+            operator,
+            value: bufferToArango(value),
+          };
+      }
+    case 'passwordExpiresAt':
+    case 'lastLogin':
+    case 'secondLastLogin':
+      switch (operator) {
+        case 'eq':
+        case 'neq':
+          return {
+            property,
+            operator,
+            value: value === null ? null : dateToArango(value),
+          };
+        case 'in':
+        case 'nin':
+          return {
+            property,
+            operator,
+            value: value.map((v) => (v === null ? null : dateToArango(v))),
+          };
+      }
+    case 'settings.emailOn.newMessage':
+    case 'settings.emailOn.newSubstitution':
+    case 'settings.emailOn.newNews':
+    case 'settings.pushOn.newMessage':
+    case 'settings.pushOn.newSubstitution':
+    case 'settings.pushOn.newNews':
+    case 'settings.considerNews.newEvent':
+    case 'settings.considerNews.newBlog':
+    case 'settings.considerNews.newGallery':
+    case 'settings.considerNews.fileChanged':
+    case 'settings.mailbox.deleteAfter':
+    case 'settings.mailbox.deleteAfterInBin':
+    case 'settings.profile.sessionTimeout':
+      return filter;
+    case 'settings.profile.formOfAddress':
+      switch (operator) {
+        case 'eq':
+        case 'neq':
+          return {
+            property,
+            operator,
+            value: formOfAddressToArango(value),
+          };
+        case 'gt':
+        case 'lt':
+        case 'in':
+        case 'nin':
+          throw new FilterError(property, operator, 'FormOfAddress');
+      }
   }
 }
