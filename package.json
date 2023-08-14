@@ -7,7 +7,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "dev": "nodemon -w tools -e ts --exec \"ts-node-transpile-only -r tsconfig-paths/register -r source-map-support/register src --watch\"",
-    "build": "tsc && tsc-alias",
+    "build": "tsoa spec-and-routes --configuration src/servers/rest/tsoa.json && tsc && tsc-alias",
     "start": "node src"
   },
   "engines": {

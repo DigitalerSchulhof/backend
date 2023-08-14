@@ -70,7 +70,7 @@ export type AccountSettingsProfile = {
 export type FormOfAddress = 'formal' | 'informal';
 
 @Route('accounts')
-export class RestAccountService extends Controller {
+export class RestAccountController extends Controller {
   constructor(
     private readonly contextManager: RestContextManager,
     private readonly service: js.AccountService
@@ -117,7 +117,7 @@ export class RestAccountService extends Controller {
   async create(
     @Request() req: Req,
     @Body() data: Account,
-    @Query() ifPersonRev: string | undefined
+    @Query() ifPersonRev?: string | undefined
   ): Promise<WithId<Account>> {
     const context = await this.contextManager.get(req);
 

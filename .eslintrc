@@ -57,7 +57,7 @@
       }
     },
     {
-      "files": ["./src/{repositories/arango,services/rest}/converters/*.ts"],
+      "files": ["./src/{repositories/arango,servers/rest}/converters/*.ts"],
       "rules": {
         "no-fallthrough": "off"
       }

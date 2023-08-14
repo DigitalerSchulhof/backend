@@ -1,0 +1,14 @@
+{
+  "entryFile": "src/servers/rest/app.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/servers/rest/controllers/*-controller.ts"],
+  "spec": {
+    "outputDirectory": "src/servers/rest/tsoa",
+    "specVersion": 3
+  },
+  "routes": {
+    "routesDir": "src/servers/rest/tsoa",
+    "iocModule": "src/servers/rest/ioc",
+    "middleware": "koa"
+  }
+}

@@ -1,4 +1,4 @@
-import type * as restBase from '#/servers/rest/services/base';
+import type * as restBase from '#/servers/rest/controllers/base';
 import type * as jsBase from '#/services/base';
 
 export function idToRest(id: jsBase.WithId<unknown>): restBase.WithId<unknown> {

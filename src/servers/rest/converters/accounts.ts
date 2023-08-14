@@ -1,8 +1,8 @@
-import type * as rest from '#/servers/rest/services/account';
-import type * as restBase from '#/servers/rest/services/base';
 import * as js from '#/services/account';
 import type * as jsBase from '#/services/base';
 import { ClientFilterError } from '#/utils/errors';
+import type * as rest from '../controllers/account-controller';
+import type * as restBase from '../controllers/base';
 import {
   bufferFromRest,
   bufferToRest,
