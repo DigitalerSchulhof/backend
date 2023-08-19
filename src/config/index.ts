@@ -6,8 +6,14 @@ const configSchema = {
     default: 'local',
   }),
   port: v.number({
-    default: 8080,
+    default: 4000,
   }),
+  database: {
+    url: v.string({ default: 'http://localhost:8529' }),
+    name: v.string({ default: 'dsh' }),
+    username: v.string({ default: 'root' }),
+    password: v.string({ default: '' }),
+  },
 } as const;
 
 export type Config = Parse<typeof configSchema>;

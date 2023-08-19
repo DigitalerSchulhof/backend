@@ -5,6 +5,7 @@ import { DocumentCollection } from 'arangojs/collection';
 import { ArrayCursor } from 'arangojs/cursor';
 import { QueryOptions } from 'arangojs/database';
 import { ArangoError } from 'arangojs/error';
+import { tokens } from 'typed-inject';
 
 export type WithKey<T> = T & {
   _key: string;
@@ -45,6 +46,8 @@ export abstract class ArangoRepository<
   }
 
   constructor(private readonly db: Database) {}
+
+  static readonly inject = tokens('database');
 
   async search(
     query: SearchOptions<WithKey<Base>>

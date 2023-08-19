@@ -1,6 +1,10 @@
+import { AccountRepository } from '#/repositories/interfaces/account';
+// import { PersonRepository } from '#/repositories/interfaces/person';
 import { Account, AccountSettings } from '#/services/account';
 import { IdNotFoundError, InputValidationError } from '#/utils/errors';
+import { tokens } from 'typed-inject';
 import { BaseValidator, aggregateValidationErrors } from './base';
+import { repositoryTokens } from '#/repositories/tokens';
 
 export const MAX_SESSION_TIMEOUT = 300;
 
@@ -14,6 +18,17 @@ export const ACCOUNT_SETTINGS_PROFILE_SESSION_TIMEOUT_INVALID =
   'ACCOUNT_SETTINGS_PROFILE_SESSION_TIMEOUT_INVALID';
 
 export class AccountValidator extends BaseValidator<Account> {
+  constructor(
+    private readonly repository: AccountRepository // private readonly personRepository: PersonRepository
+  ) {
+    super();
+  }
+
+  static readonly inject = tokens(
+    repositoryTokens.accountRepository
+    // repositoryTokens.personRepository
+  );
+
   override async assertCanCreate(data: Account): Promise<void | never> {
     await this.assertPersonExists(data.personId);
 
@@ -24,7 +39,7 @@ export class AccountValidator extends BaseValidator<Account> {
     id: string,
     data: Partial<Account>
   ): Promise<void | never> {
-    const [base] = await this.repositories.account.getByIds([id]);
+    const [base] = await this.repository.get([id]);
 
     if (!base) {
       throw new IdNotFoundError();
@@ -46,11 +61,11 @@ export class AccountValidator extends BaseValidator<Account> {
   }
 
   private async assertPersonExists(personId: string): Promise<void | never> {
-    const [person] = await this.repositories.person.getByIds([personId]);
-
-    if (!person) {
-      throw new InputValidationError(PERSON_DOES_NOT_EXIST);
-    }
+    // TODO: Implement person stuff
+    // const [person] = await this.personRepository.get([personId]);
+    // if (!person) {
+    //   throw new InputValidationError(PERSON_DOES_NOT_EXIST);
+    // }
   }
 
   private async assertSettingsValid(

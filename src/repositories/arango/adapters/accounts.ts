@@ -4,12 +4,16 @@ import {
   accountToArango,
 } from '#/repositories/arango/converters/account';
 import { ArangoAccountRepository } from '#/repositories/arango/services/account';
+import { arangoRepositoryTokens } from '#/repositories/arango/tokens';
 import { AccountRepository } from '#/repositories/interfaces/account';
 import * as js from '#/services/account';
 import { ListResult, SearchOptions, TypeFilter, WithId } from '#/services/base';
+import { tokens } from 'typed-inject';
 
 export class ArangoAccountRepositoryAdapter implements AccountRepository {
   constructor(private readonly repository: ArangoAccountRepository) {}
+
+  static readonly inject = tokens(arangoRepositoryTokens.accountRepository);
 
   async search(
     options: SearchOptions<js.Account>

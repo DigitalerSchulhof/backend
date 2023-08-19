@@ -1,6 +1,10 @@
 import { AccountPermissionHandler } from '#/permissions/account';
+import { permissionHandlerTokens } from '#/permissions/tokens';
 import { AccountRepository } from '#/repositories/interfaces/account';
+import { repositoryTokens } from '#/repositories/tokens';
 import { AccountValidator } from '#/validators/account';
+import { validatorTokens } from '#/validators/tokens';
+import { tokens } from 'typed-inject';
 import {
   BaseService,
   ListResult,
@@ -66,6 +70,12 @@ export class AccountService extends BaseService<Account> {
   ) {
     super();
   }
+
+  static readonly inject = tokens(
+    repositoryTokens.accountRepository,
+    validatorTokens.accountValidator,
+    permissionHandlerTokens.accountPermissionHandler
+  );
 
   override async search(
     context: RequestContext,

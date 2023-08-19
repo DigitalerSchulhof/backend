@@ -9,9 +9,14 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "types": ["node", "jest"],
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "baseUrl": ".",
     "paths": {
       "#/*": ["./src/*"]
-    }
+    },
+    "outDir": "./dist"
   },
   "include": ["src/**/*", "reset.d.ts"]
 }

@@ -81,6 +81,8 @@ type FiltersForProperty<Key, Type> = [Type] extends [number]
 
 export type Req = koa.Request;
 
-export interface RestContextManager {
-  get(req: Req): Promise<RequestContext>;
+export class RestContextManager {
+  async get(req: Req): Promise<RequestContext> {
+    return {};
+  }
 }
