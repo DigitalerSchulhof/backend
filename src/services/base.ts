@@ -34,7 +34,6 @@ export abstract class BaseService<Base extends object> {
 
   abstract update(
     context: RequestContext,
-
     id: string,
     data: Partial<Base>,
     options?: {
@@ -43,24 +42,19 @@ export abstract class BaseService<Base extends object> {
   ): Promise<WithId<Base>>;
 
   abstract updateWhere(
-    context: RequestContext,
     filter: TypeFilter<Base>,
     data: Partial<Base>
-  ): Promise<WithId<Base>[]>;
+  ): Promise<number>;
 
   abstract delete(
     context: RequestContext,
-
     id: string,
     options?: {
       ifRev?: string;
     }
   ): Promise<WithId<Base>>;
 
-  abstract deleteWhere(
-    context: RequestContext,
-    filter: TypeFilter<Base>
-  ): Promise<WithId<Base>[]>;
+  abstract deleteWhere(filter: TypeFilter<Base>): Promise<number>;
 }
 
 export type TypeFilter<Type extends object> =

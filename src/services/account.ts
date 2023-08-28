@@ -123,14 +123,10 @@ export class AccountService extends BaseService<Account> {
     return this.repository.update(id, data, options);
   }
 
-  override async updateWhere(
-    context: RequestContext,
+  override updateWhere(
     filter: TypeFilter<Account>,
     data: Partial<Account>
-  ): Promise<WithId<Account>[]> {
-    await this.permissionHandler.assertMayUpdateMany(context, data);
-    await this.validator.assertCanUpdateMany(data);
-
+  ): Promise<number> {
     return this.repository.updateWhere(filter, data);
   }
 
@@ -144,12 +140,7 @@ export class AccountService extends BaseService<Account> {
     return this.repository.delete(id, options);
   }
 
-  override async deleteWhere(
-    context: RequestContext,
-    filter: TypeFilter<Account>
-  ): Promise<WithId<Account>[]> {
-    await this.permissionHandler.assertMayDeleteMany(context);
-
+  override async deleteWhere(filter: TypeFilter<Account>): Promise<number> {
     return this.repository.deleteWhere(filter);
   }
 }

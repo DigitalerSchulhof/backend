@@ -18,7 +18,7 @@ import {
   accountFilterFromRest,
   accountFromRest,
   accountToRest,
-} from '../converters/accounts';
+} from '../converters/account';
 import {
   ListResult,
   Req,
@@ -90,29 +90,28 @@ export class RestAccountController extends Controller {
 
   static readonly key = restControllerTokens.accountController;
 
-  // TODO: Fix tsoa
-  // @Post('search')
-  // async search(
-  //   @Request() req: Req,
-  //   @Body() searchOptions: SearchOptions<WithId<Account>>
-  // ): Promise<ListResult<Account>> {
-  //   const context = await this.contextManager.get(req);
+  @Post('search')
+  async search(
+    @Request() req: Req,
+    @Body() searchOptions: SearchOptions<WithId<Account>>
+  ): Promise<ListResult<Account>> {
+    const context = await this.contextManager.get(req);
 
-  //   const res = await this.service.search(context, {
-  //     limit: searchOptions.limit,
-  //     offset: searchOptions.offset,
-  //     filter:
-  //       searchOptions.filter === undefined
-  //         ? undefined
-  //         : accountFilterFromRest(searchOptions.filter),
-  //     order: searchOptions.order,
-  //   });
+    const res = await this.service.search(context, {
+      limit: searchOptions.limit,
+      offset: searchOptions.offset,
+      filter:
+        searchOptions.filter === undefined
+          ? undefined
+          : accountFilterFromRest(searchOptions.filter),
+      order: searchOptions.order,
+    });
 
-  //   return {
-  //     items: res.items.map((r) => accountToRest(r)),
-  //     total: res.total,
-  //   };
-  // }
+    return {
+      items: res.items.map((r) => accountToRest(r)),
+      total: res.total,
+    };
+  }
 
   @Get(':ids')
   async get(

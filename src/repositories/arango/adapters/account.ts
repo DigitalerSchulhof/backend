@@ -1,14 +1,14 @@
-import {
-  accountFilterToArango,
-  accountFromArango,
-  accountToArango,
-} from '#/repositories/arango/converters/account';
-import { ArangoAccountRepository } from '#/repositories/arango/services/account';
-import { arangoRepositoryTokens } from '#/repositories/arango/tokens';
 import { AccountRepository } from '#/repositories/interfaces/account';
 import * as js from '#/services/account';
 import { ListResult, SearchOptions, TypeFilter, WithId } from '#/services/base';
 import { tokens } from 'typed-inject';
+import {
+  accountFilterToArango,
+  accountFromArango,
+  accountToArango,
+} from '../converters/account';
+import { ArangoAccountRepository } from '../services/account';
+import { arangoRepositoryTokens } from '../tokens';
 
 export class ArangoAccountRepositoryAdapter implements AccountRepository {
   constructor(private readonly repository: ArangoAccountRepository) {}
@@ -42,12 +42,12 @@ export class ArangoAccountRepositoryAdapter implements AccountRepository {
 
   // TODO: Person Rev
   async create(
-    account: js.Account,
+    data: js.Account,
     options?: {
       ifPersonRev?: string;
     }
   ): Promise<WithId<js.Account>> {
-    const res = await this.repository.create(accountToArango(account));
+    const res = await this.repository.create(accountToArango(data));
 
     return accountFromArango(res);
   }
@@ -69,13 +69,13 @@ export class ArangoAccountRepositoryAdapter implements AccountRepository {
   async updateWhere(
     filter: TypeFilter<js.Account>,
     data: Partial<js.Account>
-  ): Promise<WithId<js.Account>[]> {
+  ): Promise<number> {
     const res = await this.repository.updateWhere(
       accountFilterToArango(filter),
       accountToArango(data)
     );
 
-    return res.map((r) => accountFromArango(r));
+    return res;
   }
 
   async delete(
@@ -87,13 +87,11 @@ export class ArangoAccountRepositoryAdapter implements AccountRepository {
     return accountFromArango(res);
   }
 
-  async deleteWhere(
-    filter: TypeFilter<js.Account>
-  ): Promise<WithId<js.Account>[]> {
+  async deleteWhere(filter: TypeFilter<js.Account>): Promise<number> {
     const res = await this.repository.deleteWhere(
       accountFilterToArango(filter)
     );
 
-    return res.map((account) => accountFromArango(account));
+    return res;
   }
 }

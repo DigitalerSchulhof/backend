@@ -12,8 +12,6 @@ export abstract class BaseValidator<Base extends object> {
     data: Partial<Base>
   ): Promise<void | never>;
 
-  abstract assertCanUpdateMany(data: Partial<Base>): Promise<void | never>;
-
   /**
    * Helper expression to throw a validation error.
    */

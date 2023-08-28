@@ -28,12 +28,5 @@ export class AccountPermissionHandler
     data: Partial<Account>
   ): Promise<void> {}
 
-  async assertMayUpdateMany(
-    context: RequestContext,
-    data: Partial<Account>
-  ): Promise<void> {}
-
   async assertMayDelete(context: RequestContext, id: string): Promise<void> {}
-
-  async assertMayDeleteMany(context: RequestContext): Promise<void> {}
 }

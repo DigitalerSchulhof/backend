@@ -1,10 +1,10 @@
 import { AccountRepository } from '#/repositories/interfaces/account';
-// import { PersonRepository } from '#/repositories/interfaces/person';
+import { PersonRepository } from '#/repositories/interfaces/person';
+import { repositoryTokens } from '#/repositories/tokens';
 import { Account, AccountSettings } from '#/services/account';
 import { IdNotFoundError, InputValidationError } from '#/utils/errors';
 import { tokens } from 'typed-inject';
 import { BaseValidator, aggregateValidationErrors } from './base';
-import { repositoryTokens } from '#/repositories/tokens';
 
 export const MAX_SESSION_TIMEOUT = 300;
 
@@ -19,14 +19,15 @@ export const ACCOUNT_SETTINGS_PROFILE_SESSION_TIMEOUT_INVALID =
 
 export class AccountValidator extends BaseValidator<Account> {
   constructor(
-    private readonly repository: AccountRepository // private readonly personRepository: PersonRepository
+    private readonly repository: AccountRepository,
+    private readonly personRepository: PersonRepository
   ) {
     super();
   }
 
   static readonly inject = tokens(
-    repositoryTokens.accountRepository
-    // repositoryTokens.personRepository
+    repositoryTokens.accountRepository,
+    repositoryTokens.personRepository
   );
 
   override async assertCanCreate(data: Account): Promise<void | never> {
@@ -52,20 +53,11 @@ export class AccountValidator extends BaseValidator<Account> {
     ]);
   }
 
-  override async assertCanUpdateMany(data: Partial<Account>): Promise<void> {
-    await aggregateValidationErrors([
-      data.settings === undefined
-        ? null
-        : this.assertSettingsValid(data.settings),
-    ]);
-  }
-
   private async assertPersonExists(personId: string): Promise<void | never> {
-    // TODO: Implement person stuff
-    // const [person] = await this.personRepository.get([personId]);
-    // if (!person) {
-    //   throw new InputValidationError(PERSON_DOES_NOT_EXIST);
-    // }
+    const [person] = await this.personRepository.get([personId]);
+    if (!person) {
+      throw new InputValidationError(PERSON_DOES_NOT_EXIST);
+    }
   }
 
   private async assertSettingsValid(

@@ -15,10 +15,7 @@ export interface BaseRepository<Base extends object> {
     }
   ): Promise<WithId<Base>>;
 
-  updateWhere(
-    filter: TypeFilter<Base>,
-    data: Partial<Base>
-  ): Promise<WithId<Base>[]>;
+  updateWhere(filter: TypeFilter<Base>, data: Partial<Base>): Promise<number>;
 
   delete(
     id: string,
@@ -27,5 +24,5 @@ export interface BaseRepository<Base extends object> {
     }
   ): Promise<WithId<Base>>;
 
-  deleteWhere(filter: TypeFilter<Base>): Promise<WithId<Base>[]>;
+  deleteWhere(filter: TypeFilter<Base>): Promise<number>;
 }

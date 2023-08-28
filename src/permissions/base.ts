@@ -18,13 +18,7 @@ export abstract class BasePermissionHandler<Base extends object> {
 
   abstract assertMayUpdate(
     context: RequestContext,
-
     id: string,
-    data: Partial<Base>
-  ): Promise<void | never>;
-
-  abstract assertMayUpdateMany(
-    context: RequestContext,
     data: Partial<Base>
   ): Promise<void | never>;
 
@@ -32,6 +26,4 @@ export abstract class BasePermissionHandler<Base extends object> {
     context: RequestContext,
     id: string
   ): Promise<void | never>;
-
-  abstract assertMayDeleteMany(context: RequestContext): Promise<void | never>;
 }

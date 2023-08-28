@@ -43,8 +43,7 @@ export type AccountSettingsProfile = {
   formOfAddress: FormOfAddress;
 };
 
-export const FORMS_OF_ADDRESS = ['formal', 'informal'] as const;
-export type FormOfAddress = (typeof FORMS_OF_ADDRESS)[number];
+export type FormOfAddress = 'formal' | 'informal';
 
 export class ArangoAccountRepository extends ArangoRepository<Account> {
   protected override collectionName = 'accounts';

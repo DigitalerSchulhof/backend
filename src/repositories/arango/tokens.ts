@@ -1,4 +1,18 @@
 export const arangoRepositoryTokens = {
   accountRepository: 'arangoAccountRepository',
   accountRepositoryAdapter: 'arangoAccountRepositoryAdapter',
+  classRepository: 'arangoClassRepository',
+  classRepositoryAdapter: 'arangoClassRepositoryAdapter',
+  courseRepository: 'arangoCourseRepository',
+  courseRepositoryAdapter: 'arangoCourseRepositoryAdapter',
+  identityTheftRepository: 'arangoIdentityTheftRepository',
+  identityTheftRepositoryAdapter: 'arangoIdentityTheftRepositoryAdapter',
+  levelRepository: 'arangoLevelRepository',
+  levelRepositoryAdapter: 'arangoLevelRepositoryAdapter',
+  personRepository: 'arangoPersonRepository',
+  personRepositoryAdapter: 'arangoPersonRepositoryAdapter',
+  schoolyearRepository: 'arangoSchoolyearRepository',
+  schoolyearRepositoryAdapter: 'arangoSchoolyearRepositoryAdapter',
+  sessionRepository: 'arangoSessionRepository',
+  sessionRepositoryAdapter: 'arangoSessionRepositoryAdapter',
 } as const;

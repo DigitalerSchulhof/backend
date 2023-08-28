@@ -5,8 +5,8 @@ export function idToRest(id: jsBase.WithId<unknown>): restBase.WithId<unknown> {
   return {
     id: id.id,
     rev: id.rev,
-    updatedAt: id.updatedAt.getTime(),
-    createdAt: id.createdAt.getTime(),
+    updatedAt: dateToRest(id.updatedAt),
+    createdAt: dateToRest(id.createdAt),
   };
 }
 

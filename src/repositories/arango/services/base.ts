@@ -127,8 +127,8 @@ export abstract class ArangoRepository<
   async updateWhere(
     filter: TypeFilter<WithKey<Base>>,
     patch: Partial<Base>
-  ): Promise<WithKey<Base>[]> {
-    const res = await this.query<WithKey<Base>>(
+  ): Promise<number> {
+    const res = await this.query<number>(
       aql.aql`
         FOR doc IN ${this.collectionNameLiteral}
           ${
@@ -170,10 +170,8 @@ export abstract class ArangoRepository<
     return (await res.next())!;
   }
 
-  async deleteWhere(
-    filter: TypeFilter<WithKey<Base>>
-  ): Promise<WithKey<Base>[]> {
-    const res = await this.query<WithKey<Base>>(
+  async deleteWhere(filter: TypeFilter<WithKey<Base>>): Promise<number> {
+    const res = await this.query<number>(
       aql.aql`
         FOR doc IN ${this.collectionNameLiteral}
           ${
