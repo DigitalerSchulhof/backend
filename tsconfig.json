@@ -1,22 +1,26 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "types": ["bun-types"],
+
     "lib": ["ESNext"],
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "allowImportingTsExtensions": false,
+    "moduleDetection": "force",
+
     "strict": true,
-    "module": "CommonJS",
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
     "isolatedModules": true,
     "noImplicitOverride": true,
-    "esModuleInterop": true,
+
     "experimentalDecorators": true,
-    "types": ["node", "jest"],
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
     "baseUrl": ".",
     "paths": {
       "#/*": ["./src/*"]
-    },
-    "outDir": "./dist"
+    }
   },
   "include": ["src/**/*", "reset.d.ts"]
 }

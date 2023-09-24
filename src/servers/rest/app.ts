@@ -3,7 +3,7 @@ import {
   RestControllerInjector,
   createRestControllerInjector,
 } from '#/servers/rest/controllers';
-import { RegisterRoutes } from '#/servers/rest/tsoa/routes';
+// import { RegisterRoutes } from '#/servers/rest/tsoa/routes';
 import { ServiceInjector } from '#/services';
 import Router from '@koa/router';
 import Koa from 'koa';
@@ -27,7 +27,7 @@ export function createApp(
 
   const router = new Router();
 
-  RegisterRoutes(router);
+  // RegisterRoutes(router);
 
   app.use(router.routes()).use(router.allowedMethods());
 

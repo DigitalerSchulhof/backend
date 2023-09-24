@@ -5,12 +5,9 @@ import {
 } from '#/utils/errors';
 
 export abstract class BaseValidator<Base extends object> {
-  abstract assertCanCreate(data: Base): Promise<void | never>;
+  abstract assertCanCreate(data: Base): Promise<void>;
 
-  abstract assertCanUpdate(
-    id: string,
-    data: Partial<Base>
-  ): Promise<void | never>;
+  abstract assertCanUpdate(id: string, data: Partial<Base>): Promise<void>;
 
   /**
    * Helper expression to throw a validation error.
@@ -26,8 +23,8 @@ export abstract class BaseValidator<Base extends object> {
  * @see aggregateValidationErrorsReasons
  */
 export async function aggregateValidationErrors(
-  promises: Iterable<MaybePromise<unknown> | null>
-): Promise<void | never> {
+  promises: Iterable<MaybePromise<unknown>>
+): Promise<void> {
   const results = await Promise.allSettled(promises);
 
   const errors = results.filter(isPromiseRejectedResult);

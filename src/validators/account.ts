@@ -30,16 +30,17 @@ export class AccountValidator extends BaseValidator<Account> {
     repositoryTokens.personRepository
   );
 
-  override async assertCanCreate(data: Account): Promise<void | never> {
-    await this.assertPersonExists(data.personId);
-
-    await aggregateValidationErrors([this.assertSettingsValid(data.settings)]);
+  override async assertCanCreate(data: Account): Promise<void> {
+    await aggregateValidationErrors([
+      this.assertPersonExists(data.personId),
+      this.assertSettingsValid(data.settings),
+    ]);
   }
 
   override async assertCanUpdate(
     id: string,
     data: Partial<Account>
-  ): Promise<void | never> {
+  ): Promise<void> {
     const [base] = await this.repository.get([id]);
 
     if (!base) {
@@ -47,22 +48,24 @@ export class AccountValidator extends BaseValidator<Account> {
     }
 
     await aggregateValidationErrors([
+      data.personId === undefined
+        ? null
+        : this.assertPersonExists(data.personId),
       data.settings === undefined
         ? null
         : this.assertSettingsValid(data.settings),
     ]);
   }
 
-  private async assertPersonExists(personId: string): Promise<void | never> {
+  private async assertPersonExists(personId: string): Promise<void> {
     const [person] = await this.personRepository.get([personId]);
+
     if (!person) {
       throw new InputValidationError(PERSON_DOES_NOT_EXIST);
     }
   }
 
-  private async assertSettingsValid(
-    settings: AccountSettings
-  ): Promise<void | never> {
+  private async assertSettingsValid(settings: AccountSettings): Promise<void> {
     await aggregateValidationErrors([
       settings.mailbox.deleteAfter !== null &&
       (!Number.isInteger(settings.mailbox.deleteAfter) ||
