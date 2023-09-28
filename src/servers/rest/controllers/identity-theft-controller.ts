@@ -19,13 +19,7 @@ import {
   identityTheftFromRest,
   identityTheftToRest,
 } from '../converters/identity-theft';
-import {
-  ListResult,
-  Req,
-  RestContextManager,
-  SearchOptions,
-  WithId,
-} from './base';
+import { ListResult, RestContextManager, SearchOptions, WithId } from './base';
 import { restControllerTokens } from './tokens';
 
 export type IdentityTheft = {
@@ -52,7 +46,7 @@ export class RestIdentityTheftController extends Controller {
 
   @Post('search')
   async search(
-    @Request() req: Req,
+    @Request() req: Request,
     @Body() searchOptions: SearchOptions<WithId<IdentityTheft>>
   ): Promise<ListResult<IdentityTheft>> {
     const context = await this.contextManager.get(req);
@@ -75,7 +69,7 @@ export class RestIdentityTheftController extends Controller {
 
   @Get(':ids')
   async get(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() ids: string
   ): Promise<(WithId<IdentityTheft> | null)[]> {
     const context = await this.contextManager.get(req);
@@ -87,7 +81,7 @@ export class RestIdentityTheftController extends Controller {
 
   @Post('')
   async create(
-    @Request() req: Req,
+    @Request() req: Request,
     @Body() data: IdentityTheft
   ): Promise<WithId<IdentityTheft>> {
     const context = await this.contextManager.get(req);
@@ -99,7 +93,7 @@ export class RestIdentityTheftController extends Controller {
 
   @Patch(':id')
   async update(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() id: string,
     @Body() data: Partial<IdentityTheft>,
     @Query() ifRev?: string
@@ -120,7 +114,7 @@ export class RestIdentityTheftController extends Controller {
 
   @Delete(':id')
   async delete(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() id: string,
     @Query() ifRev?: string
   ): Promise<WithId<IdentityTheft>> {

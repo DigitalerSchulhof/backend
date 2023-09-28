@@ -19,13 +19,7 @@ import {
   schoolyearFromRest,
   schoolyearToRest,
 } from '../converters/schoolyear';
-import {
-  ListResult,
-  Req,
-  RestContextManager,
-  SearchOptions,
-  WithId,
-} from './base';
+import { ListResult, RestContextManager, SearchOptions, WithId } from './base';
 import { restControllerTokens } from './tokens';
 
 export type Schoolyear = {
@@ -53,7 +47,7 @@ export class RestSchoolyearController extends Controller {
 
   @Post('search')
   async search(
-    @Request() req: Req,
+    @Request() req: Request,
     @Body() searchOptions: SearchOptions<WithId<Schoolyear>>
   ): Promise<ListResult<Schoolyear>> {
     const context = await this.contextManager.get(req);
@@ -76,7 +70,7 @@ export class RestSchoolyearController extends Controller {
 
   @Get(':ids')
   async get(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() ids: string
   ): Promise<(WithId<Schoolyear> | null)[]> {
     const context = await this.contextManager.get(req);
@@ -88,7 +82,7 @@ export class RestSchoolyearController extends Controller {
 
   @Post('')
   async create(
-    @Request() req: Req,
+    @Request() req: Request,
     @Body() data: Schoolyear
   ): Promise<WithId<Schoolyear>> {
     const context = await this.contextManager.get(req);
@@ -100,7 +94,7 @@ export class RestSchoolyearController extends Controller {
 
   @Patch(':id')
   async update(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() id: string,
     @Body() data: Partial<Schoolyear>,
     @Query() ifRev?: string
@@ -121,7 +115,7 @@ export class RestSchoolyearController extends Controller {
 
   @Delete(':id')
   async delete(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() id: string,
     @Query() ifRev?: string
   ): Promise<WithId<Schoolyear>> {

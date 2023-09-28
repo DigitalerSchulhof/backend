@@ -19,13 +19,7 @@ import {
   levelFromRest,
   levelToRest,
 } from '../converters/level';
-import {
-  ListResult,
-  Req,
-  RestContextManager,
-  SearchOptions,
-  WithId,
-} from './base';
+import { ListResult, RestContextManager, SearchOptions, WithId } from './base';
 import { restControllerTokens } from './tokens';
 
 export type Level = {
@@ -49,7 +43,7 @@ export class RestLevelController extends Controller {
 
   @Post('search')
   async search(
-    @Request() req: Req,
+    @Request() req: Request,
     @Body() searchOptions: SearchOptions<WithId<Level>>
   ): Promise<ListResult<Level>> {
     const context = await this.contextManager.get(req);
@@ -72,7 +66,7 @@ export class RestLevelController extends Controller {
 
   @Get(':ids')
   async get(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() ids: string
   ): Promise<(WithId<Level> | null)[]> {
     const context = await this.contextManager.get(req);
@@ -84,7 +78,7 @@ export class RestLevelController extends Controller {
 
   @Post('')
   async create(
-    @Request() req: Req,
+    @Request() req: Request,
     @Body() data: Level
   ): Promise<WithId<Level>> {
     const context = await this.contextManager.get(req);
@@ -96,7 +90,7 @@ export class RestLevelController extends Controller {
 
   @Patch(':id')
   async update(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() id: string,
     @Body() data: Partial<Level>,
     @Query() ifRev?: string
@@ -112,7 +106,7 @@ export class RestLevelController extends Controller {
 
   @Delete(':id')
   async delete(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() id: string,
     @Query() ifRev?: string
   ): Promise<WithId<Level>> {

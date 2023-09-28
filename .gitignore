@@ -6,4 +6,4 @@ dist/
 /.cache
 /coverage
 
-/src/servers/rest/tsoa
+/src/servers/rest/bttp

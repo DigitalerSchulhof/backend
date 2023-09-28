@@ -79,10 +79,8 @@ type FiltersForProperty<Key, Type> = [Type] extends [number]
   ? { property: Key; operator: 'eq' | 'neq'; value: Type }
   : never;
 
-export type Req = koa.Request;
-
 export class RestContextManager {
-  async get(req: Req): Promise<RequestContext> {
+  async get(req: Request): Promise<RequestContext> {
     return {};
   }
 }

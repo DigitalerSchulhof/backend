@@ -11,20 +11,16 @@
     "start": "bun run src/index.ts"
   },
   "dependencies": {
-    "@koa/router": "12.0.0",
-    "@tsoa/runtime": "5.0.0",
+    "@stricjs/router": "^4.2.4",
     "arangojs": "8.4.0",
-    "koa": "2.14.2",
     "ms": "2.1.3",
-    "tsoa": "5.1.1",
+    "tsoa": "^5.1.1",
     "typed-inject": "3.0.1",
     "vality": "6.3.3",
     "vality-env": "1.0.1"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "0.5.1",
-    "@types/koa": "2.13.8",
-    "@types/koa__router": "12.0.0",
     "@types/ms": "0.7.31",
     "@typescript-eslint/eslint-plugin": "6.5.0",
     "@typescript-eslint/parser": "6.5.0",

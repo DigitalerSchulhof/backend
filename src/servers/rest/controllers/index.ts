@@ -73,4 +73,11 @@ export function createRestControllerInjector(
 
 export type RestControllerInjector = Injector<{
   [restControllerTokens.accountController]: RestAccountController;
+  [restControllerTokens.classController]: RestClassController;
+  [restControllerTokens.courseController]: RestCourseController;
+  [restControllerTokens.identityTheftController]: RestIdentityTheftController;
+  [restControllerTokens.levelController]: RestLevelController;
+  [restControllerTokens.personController]: RestPersonController;
+  [restControllerTokens.schoolyearController]: RestSchoolyearController;
+  [restControllerTokens.sessionController]: RestSessionController;
 }>;

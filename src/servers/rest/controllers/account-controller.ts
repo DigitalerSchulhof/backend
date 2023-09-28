@@ -19,13 +19,7 @@ import {
   accountFromRest,
   accountToRest,
 } from '../converters/account';
-import {
-  ListResult,
-  Req,
-  RestContextManager,
-  SearchOptions,
-  WithId,
-} from './base';
+import { ListResult, RestContextManager, SearchOptions, WithId } from './base';
 import { restControllerTokens } from './tokens';
 
 export type Account = {
@@ -92,7 +86,7 @@ export class RestAccountController extends Controller {
 
   @Post('search')
   async search(
-    @Request() req: Req,
+    @Request() req: Request,
     @Body() searchOptions: SearchOptions<WithId<Account>>
   ): Promise<ListResult<Account>> {
     const context = await this.contextManager.get(req);
@@ -115,7 +109,7 @@ export class RestAccountController extends Controller {
 
   @Get(':ids')
   async get(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() ids: string
   ): Promise<(WithId<Account> | null)[]> {
     const context = await this.contextManager.get(req);
@@ -127,7 +121,7 @@ export class RestAccountController extends Controller {
 
   @Post('')
   async create(
-    @Request() req: Req,
+    @Request() req: Request,
     @Body() data: Account,
     @Query() ifPersonRev?: string
   ): Promise<WithId<Account>> {
@@ -142,7 +136,7 @@ export class RestAccountController extends Controller {
 
   @Patch(':id')
   async update(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() id: string,
     @Body() data: Partial<Account>,
     @Query() ifRev?: string
@@ -158,7 +152,7 @@ export class RestAccountController extends Controller {
 
   @Delete(':id')
   async delete(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() id: string,
     @Query() ifRev?: string
   ): Promise<WithId<Account>> {

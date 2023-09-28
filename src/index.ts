@@ -2,6 +2,8 @@ import { config } from '#/config';
 import { createPermissionHandlerInjector } from '#/permissions';
 import { createArangoRepositoryInjector } from '#/repositories';
 import { createApp } from '#/servers/rest/app';
+import { createRestControllerInjector } from '#/servers/rest/controllers';
+import { iocFactory } from '#/servers/rest/ioc';
 import { createServiceInjector } from '#/services';
 import { createValidatorInjector } from '#/validators';
 
@@ -15,6 +17,10 @@ const serviceInjector = createServiceInjector(
   permissionHandlerInjector
 );
 
-const app = createApp(config, serviceInjector);
+const restControllerInjector = createRestControllerInjector(serviceInjector);
+
+const iocContainer = iocFactory(restControllerInjector);
+
+const app = createApp(iocContainer, config);
 
 app.start();

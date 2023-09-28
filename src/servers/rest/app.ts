@@ -1,39 +1,21 @@
 import { Config } from '#/config';
-import {
-  RestControllerInjector,
-  createRestControllerInjector,
-} from '#/servers/rest/controllers';
-// import { RegisterRoutes } from '#/servers/rest/tsoa/routes';
-import { ServiceInjector } from '#/services';
-import Router from '@koa/router';
-import Koa from 'koa';
-
-declare module 'koa' {
-  interface Context {
-    container: RestControllerInjector;
-  }
-}
+import { Router } from '@stricjs/router';
+import { IocContainer, applyRoutes } from './bttp/router';
 
 export function createApp(
-  config: Config,
-  serviceInjector: ServiceInjector
+  iocContainer: IocContainer,
+  config: Config
 ): { start(): void } {
-  const app = new Koa({ proxy: true });
+  const app = new Router({
+    port: config.port,
+  }).use(404);
 
-  // TODO: Fix tsoa
-  const controllerInjector = createRestControllerInjector(serviceInjector);
-
-  app.context.container = controllerInjector;
-
-  const router = new Router();
-
-  // RegisterRoutes(router);
-
-  app.use(router.routes()).use(router.allowedMethods());
+  applyRoutes(iocContainer, app);
 
   return {
     start() {
-      app.listen(config.port);
+      app.fetch;
+      app.listen();
     },
   };
 }

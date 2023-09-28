@@ -19,13 +19,7 @@ import {
   courseFromRest,
   courseToRest,
 } from '../converters/course';
-import {
-  ListResult,
-  Req,
-  RestContextManager,
-  SearchOptions,
-  WithId,
-} from './base';
+import { ListResult, RestContextManager, SearchOptions, WithId } from './base';
 import { restControllerTokens } from './tokens';
 
 export type Course = {
@@ -52,7 +46,7 @@ export class RestCourseController extends Controller {
 
   @Post('search')
   async search(
-    @Request() req: Req,
+    @Request() req: Request,
     @Body() searchOptions: SearchOptions<WithId<Course>>
   ): Promise<ListResult<Course>> {
     const context = await this.contextManager.get(req);
@@ -75,7 +69,7 @@ export class RestCourseController extends Controller {
 
   @Get(':ids')
   async get(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() ids: string
   ): Promise<(WithId<Course> | null)[]> {
     const context = await this.contextManager.get(req);
@@ -87,7 +81,7 @@ export class RestCourseController extends Controller {
 
   @Post('')
   async create(
-    @Request() req: Req,
+    @Request() req: Request,
     @Body() data: Course
   ): Promise<WithId<Course>> {
     const context = await this.contextManager.get(req);
@@ -99,7 +93,7 @@ export class RestCourseController extends Controller {
 
   @Patch(':id')
   async update(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() id: string,
     @Body() data: Partial<Course>,
     @Query() ifRev?: string
@@ -115,7 +109,7 @@ export class RestCourseController extends Controller {
 
   @Delete(':id')
   async delete(
-    @Request() req: Req,
+    @Request() req: Request,
     @Path() id: string,
     @Query() ifRev?: string
   ): Promise<WithId<Course>> {
