@@ -10,7 +10,7 @@ import { PersonService } from './person';
 import { SchoolyearService } from './schoolyear';
 import { SessionService } from './session';
 
-export function createServiceInjector(
+export function createServices(
   repositories: Repositories,
   validators: Validators,
   permissionHandlers: PermissionHandlers

@@ -4,3 +4,5 @@ export type WithKey<T> = T & {
   createdAt: number;
   updatedAt: number;
 };
+
+export type { TypeFilter } from '#/models/base';

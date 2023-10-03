@@ -1,7 +1,7 @@
-import type * as jsBase from '#/services/base';
-import * as js from '#/services/session';
-import type * as restBase from '../controllers/base';
-import type * as rest from '../controllers/session-controller';
+import type * as jsBase from '#/models/base';
+import * as js from '#/models/session';
+import type * as restBase from '../models/base';
+import type * as rest from '../models/session';
 import { dateFromRest, dateToRest, idToRest } from './base';
 
 export function sessionToRest(

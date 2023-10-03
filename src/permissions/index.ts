@@ -7,7 +7,7 @@ import { PersonPermissionHandler } from './person';
 import { SchoolyearPermissionHandler } from './schoolyear';
 import { SessionPermissionHandler } from './session';
 
-export function createPermissionHandlerInjector(): PermissionHandlers {
+export function createPermissionHandlers(): PermissionHandlers {
   return {
     accountPermissionHandler: new AccountPermissionHandler(),
     classPermissionHandler: new ClassPermissionHandler(),

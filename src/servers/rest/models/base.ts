@@ -4,3 +4,5 @@ export type WithId<T> = T & {
   readonly updatedAt: number;
   readonly createdAt: number;
 };
+
+export type { TypeFilter } from '#/models/base';

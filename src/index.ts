@@ -1,23 +1,19 @@
 import { config } from '#/config';
-import { createPermissionHandlerInjector } from '#/permissions';
-import { createArangoRepositoryInjector } from '#/repositories';
+import { createPermissionHandlers } from '#/permissions';
+import { createArangoRepositories } from '#/repositories/arango';
 import { createApp } from '#/servers/rest/app';
-import { createRestControllerInjector } from '#/servers/rest/controllers';
+import { createRestControllers } from '#/servers/rest/controllers';
 import { iocFactory } from '#/servers/rest/ioc';
-import { createServiceInjector } from '#/services';
-import { createValidatorInjector } from '#/validators';
+import { createServices } from '#/services';
+import { createValidators } from '#/validators';
 
-const repositoryInjector = createArangoRepositoryInjector(config);
-const validationInjector = createValidatorInjector(repositoryInjector);
-const permissionHandlerInjector = createPermissionHandlerInjector();
+const repositories = createArangoRepositories(config);
+const validators = createValidators(repositories);
+const permissionHandlers = createPermissionHandlers();
 
-const serviceInjector = createServiceInjector(
-  repositoryInjector,
-  validationInjector,
-  permissionHandlerInjector
-);
+const services = createServices(repositories, validators, permissionHandlers);
 
-const restControllerInjector = createRestControllerInjector(serviceInjector);
+const restControllerInjector = createRestControllers(services);
 
 const iocContainer = iocFactory(restControllerInjector);
 

@@ -1,9 +1,8 @@
-import * as js from '#/services/account';
-import * as Account from '#/services/Account';
-import type * as jsBase from '#/services/base';
+import * as js from '#/models/account';
+import type * as jsBase from '#/models/base';
 import { ClientFilterError } from '#/utils/errors';
-import type * as rest from '../controllers/account-controller';
-import type * as restBase from '../controllers/base';
+import type * as rest from '../models/account';
+import type * as restBase from '../models/base';
 import {
   bufferFromRest,
   bufferToRest,
@@ -93,9 +92,9 @@ function formOfAddressToRest(
   formOfAddress: js.FormOfAddress
 ): rest.FormOfAddress {
   switch (formOfAddress) {
-    case Account.FormOfAddress.Formal:
+    case js.FormOfAddress.Formal:
       return 'formal';
-    case Account.FormOfAddress.Informal:
+    case js.FormOfAddress.Informal:
       return 'informal';
   }
 }
@@ -199,9 +198,9 @@ function formOfAddressFromRest(
 ): js.FormOfAddress {
   switch (formOfAddress) {
     case 'formal':
-      return Account.FormOfAddress.Formal;
+      return js.FormOfAddress.Formal;
     case 'informal':
-      return Account.FormOfAddress.Informal;
+      return js.FormOfAddress.Informal;
   }
 }
 

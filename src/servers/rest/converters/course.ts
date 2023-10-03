@@ -1,7 +1,7 @@
-import type * as jsBase from '#/services/base';
-import * as js from '#/services/course';
-import type * as restBase from '../controllers/base';
-import type * as rest from '../controllers/course-controller';
+import type * as jsBase from '#/models/base';
+import * as js from '#/models/course';
+import type * as restBase from '../models/base';
+import type * as rest from '../models/course';
 import { dateFromRest, idToRest } from './base';
 
 export function courseToRest(

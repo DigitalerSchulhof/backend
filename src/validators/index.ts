@@ -8,9 +8,7 @@ import { PersonValidator } from './person';
 import { SchoolyearValidator } from './schoolyear';
 import { SessionValidator } from './session';
 
-export function createValidatorInjector(
-  repositories: Repositories
-): Validators {
+export function createValidators(repositories: Repositories): Validators {
   return {
     accountValidator: new AccountValidator(
       repositories.accountRepository,

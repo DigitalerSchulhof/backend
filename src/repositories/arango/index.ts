@@ -18,7 +18,7 @@ import { ArangoPersonRepository } from './repositories/person';
 import { ArangoSchoolyearRepository } from './repositories/schoolyear';
 import { ArangoSessionRepository } from './repositories/session';
 
-export function createArangoRepositoryInjector(config: Config): Repositories {
+export function createArangoRepositories(config: Config): Repositories {
   const db = new Database({
     databaseName: config.database.name,
     url: config.database.url,

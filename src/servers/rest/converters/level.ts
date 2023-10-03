@@ -1,7 +1,7 @@
-import type * as jsBase from '#/services/base';
-import * as js from '#/services/level';
-import type * as restBase from '../controllers/base';
-import type * as rest from '../controllers/level-controller';
+import type * as jsBase from '#/models/base';
+import * as js from '#/models/level';
+import type * as restBase from '../models/base';
+import type * as rest from '../models/level';
 import { dateFromRest, idToRest } from './base';
 
 export function levelToRest(

@@ -1,8 +1,8 @@
-import type * as jsBase from '#/services/base';
-import * as js from '#/services/person';
+import type * as jsBase from '#/models/base';
+import * as js from '#/models/person';
 import { ClientFilterError } from '#/utils/errors';
-import type * as restBase from '../controllers/base';
-import type * as rest from '../controllers/person-controller';
+import type * as restBase from '../models/base';
+import type * as rest from '../models/person';
 import { dateFromRest, idToRest } from './base';
 
 export function personToRest(

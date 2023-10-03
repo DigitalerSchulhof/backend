@@ -9,9 +9,7 @@ import { RestPersonController } from './person-controller';
 import { RestSchoolyearController } from './schoolyear-controller';
 import { RestSessionController } from './session-controller';
 
-export function createRestControllerInjector(
-  services: Services
-): RestControllers {
+export function createRestControllers(services: Services): RestControllers {
   const contextManager = new RestContextManager();
 
   return {
