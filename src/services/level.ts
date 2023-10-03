@@ -1,23 +1,9 @@
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
+import { Level } from '#/models/level';
 import { LevelPermissionHandler } from '#/permissions/level';
-import { permissionHandlerTokens } from '#/permissions/tokens';
 import { LevelRepository } from '#/repositories/interfaces/level';
-import { repositoryTokens } from '#/repositories/tokens';
 import { LevelValidator } from '#/validators/level';
-import { validatorTokens } from '#/validators/tokens';
-import { tokens } from 'typed-inject';
-import {
-  BaseService,
-  ListResult,
-  RequestContext,
-  SearchOptions,
-  TypeFilter,
-  WithId,
-} from './base';
-
-export type Level = {
-  name: string;
-  schoolyearId: string;
-};
+import { BaseService, RequestContext } from './base';
 
 export class LevelService extends BaseService<Level> {
   constructor(
@@ -27,12 +13,6 @@ export class LevelService extends BaseService<Level> {
   ) {
     super();
   }
-
-  static readonly inject = tokens(
-    repositoryTokens.levelRepository,
-    validatorTokens.levelValidator,
-    permissionHandlerTokens.levelPermissionHandler
-  );
 
   override async search(
     context: RequestContext,

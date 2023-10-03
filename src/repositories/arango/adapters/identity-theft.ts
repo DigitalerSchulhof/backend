@@ -1,23 +1,17 @@
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
+import * as js from '#/models/identity-theft';
 import { IdentityTheftRepository } from '#/repositories/interfaces/identity-theft';
-import { ListResult, SearchOptions, TypeFilter, WithId } from '#/services/base';
-import * as js from '#/services/identity-theft';
-import { tokens } from 'typed-inject';
 import {
   identityTheftFilterToArango,
   identityTheftFromArango,
   identityTheftToArango,
 } from '../converters/identity-theft';
-import { ArangoIdentityTheftRepository } from '../services/identity-theft';
-import { arangoRepositoryTokens } from '../tokens';
+import { ArangoIdentityTheftRepository } from '../repositories/identity-theft';
 
 export class ArangoIdentityTheftRepositoryAdapter
   implements IdentityTheftRepository
 {
   constructor(private readonly repository: ArangoIdentityTheftRepository) {}
-
-  static readonly inject = tokens(
-    arangoRepositoryTokens.identityTheftRepository
-  );
 
   async search(
     options: SearchOptions<js.IdentityTheft>

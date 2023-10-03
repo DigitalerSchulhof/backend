@@ -1,24 +1,9 @@
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
+import { Schoolyear } from '#/models/schoolyear';
 import { SchoolyearPermissionHandler } from '#/permissions/schoolyear';
-import { permissionHandlerTokens } from '#/permissions/tokens';
 import { SchoolyearRepository } from '#/repositories/interfaces/schoolyear';
-import { repositoryTokens } from '#/repositories/tokens';
 import { SchoolyearValidator } from '#/validators/schoolyear';
-import { validatorTokens } from '#/validators/tokens';
-import { tokens } from 'typed-inject';
-import {
-  BaseService,
-  ListResult,
-  RequestContext,
-  SearchOptions,
-  TypeFilter,
-  WithId,
-} from './base';
-
-export type Schoolyear = {
-  name: string;
-  start: Date;
-  end: Date;
-};
+import { BaseService, RequestContext } from './base';
 
 export class SchoolyearService extends BaseService<Schoolyear> {
   constructor(
@@ -28,12 +13,6 @@ export class SchoolyearService extends BaseService<Schoolyear> {
   ) {
     super();
   }
-
-  static readonly inject = tokens(
-    repositoryTokens.schoolyearRepository,
-    validatorTokens.schoolyearValidator,
-    permissionHandlerTokens.schoolyearPermissionHandler
-  );
 
   override async search(
     context: RequestContext,

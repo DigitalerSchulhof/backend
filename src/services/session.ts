@@ -1,24 +1,9 @@
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
+import { Session } from '#/models/session';
 import { SessionPermissionHandler } from '#/permissions/session';
-import { permissionHandlerTokens } from '#/permissions/tokens';
 import { SessionRepository } from '#/repositories/interfaces/session';
-import { repositoryTokens } from '#/repositories/tokens';
 import { SessionValidator } from '#/validators/session';
-import { validatorTokens } from '#/validators/tokens';
-import { tokens } from 'typed-inject';
-import {
-  BaseService,
-  ListResult,
-  RequestContext,
-  SearchOptions,
-  TypeFilter,
-  WithId,
-} from './base';
-
-export type Session = {
-  accountId: string;
-  issuedAt: Date;
-  didShowLastLogin: boolean;
-};
+import { BaseService, RequestContext } from './base';
 
 export class SessionService extends BaseService<Session> {
   constructor(
@@ -28,12 +13,6 @@ export class SessionService extends BaseService<Session> {
   ) {
     super();
   }
-
-  static readonly inject = tokens(
-    repositoryTokens.sessionRepository,
-    validatorTokens.sessionValidator,
-    permissionHandlerTokens.sessionPermissionHandler
-  );
 
   override async search(
     context: RequestContext,

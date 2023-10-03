@@ -1,10 +1,8 @@
+import { Class } from '#/models/class';
 import { ClassRepository } from '#/repositories/interfaces/class';
 import { LevelRepository } from '#/repositories/interfaces/level';
-import { repositoryTokens } from '#/repositories/tokens';
-import { Class } from '#/services/class';
 import { IdNotFoundError, InputValidationError } from '#/utils/errors';
-import { tokens } from 'typed-inject';
-import { BaseValidator, aggregateValidationErrors } from './base';
+import { BaseValidator, aggregateValidationErrors } from './utils';
 
 export const LEVEL_DOES_NOT_EXIST = 'LEVEL_DOES_NOT_EXIST';
 
@@ -15,11 +13,6 @@ export class ClassValidator extends BaseValidator<Class> {
   ) {
     super();
   }
-
-  static readonly inject = tokens(
-    repositoryTokens.classRepository,
-    repositoryTokens.levelRepository
-  );
 
   override async assertCanCreate(data: Class): Promise<void> {
     await aggregateValidationErrors([this.assertLevelExists(data.levelId)]);

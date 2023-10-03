@@ -1,8 +1,8 @@
-import type * as db from '#/repositories/arango/services/account';
-import type * as dbBase from '#/repositories/arango/services/base';
-import * as js from '#/services/account';
-import type * as jsBase from '#/services/base';
+import * as js from '#/models/account';
+import type * as jsBase from '#/models/base';
 import { FilterError } from '#/utils/errors';
+import type * as db from '../models/account';
+import type * as dbBase from '../models/base';
 import {
   bufferFromArango,
   bufferToArango,

@@ -1,5 +1,5 @@
-import type * as arangoBase from '#/repositories/arango/services/base';
-import type * as jsBase from '#/services/base';
+import type * as jsBase from '#/models/base';
+import type * as arangoBase from '../models/base';
 
 export function idFromArango(
   id: arangoBase.WithKey<unknown>

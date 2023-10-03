@@ -1,19 +1,15 @@
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
+import * as js from '#/models/session';
 import { SessionRepository } from '#/repositories/interfaces/session';
-import { ListResult, SearchOptions, TypeFilter, WithId } from '#/services/base';
-import * as js from '#/services/session';
-import { tokens } from 'typed-inject';
 import {
   sessionFilterToArango,
   sessionFromArango,
   sessionToArango,
 } from '../converters/session';
-import { ArangoSessionRepository } from '../services/session';
-import { arangoRepositoryTokens } from '../tokens';
+import { ArangoSessionRepository } from '../repositories/session';
 
 export class ArangoSessionRepositoryAdapter implements SessionRepository {
   constructor(private readonly repository: ArangoSessionRepository) {}
-
-  static readonly inject = tokens(arangoRepositoryTokens.sessionRepository);
 
   async search(
     options: SearchOptions<js.Session>

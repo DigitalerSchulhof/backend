@@ -1,8 +1,6 @@
 import { Config } from '#/config';
-import { RepositoryInjector } from '#/repositories';
-import { repositoryTokens } from '#/repositories/tokens';
+import { Repositories } from '#/repositories';
 import { Database } from 'arangojs';
-import { createInjector } from 'typed-inject';
 import { ArangoAccountRepositoryAdapter } from './adapters/account';
 import { ArangoClassRepositoryAdapter } from './adapters/class';
 import { ArangoCourseRepositoryAdapter } from './adapters/course';
@@ -11,19 +9,16 @@ import { ArangoLevelRepositoryAdapter } from './adapters/level';
 import { ArangoPersonRepositoryAdapter } from './adapters/person';
 import { ArangoSchoolyearRepositoryAdapter } from './adapters/schoolyear';
 import { ArangoSessionRepositoryAdapter } from './adapters/session';
-import { ArangoAccountRepository } from './services/account';
-import { ArangoClassRepository } from './services/class';
-import { ArangoCourseRepository } from './services/course';
-import { ArangoIdentityTheftRepository } from './services/identity-theft';
-import { ArangoLevelRepository } from './services/level';
-import { ArangoPersonRepository } from './services/person';
-import { ArangoSchoolyearRepository } from './services/schoolyear';
-import { ArangoSessionRepository } from './services/session';
-import { arangoRepositoryTokens } from './tokens';
+import { ArangoAccountRepository } from './repositories/account';
+import { ArangoClassRepository } from './repositories/class';
+import { ArangoCourseRepository } from './repositories/course';
+import { ArangoIdentityTheftRepository } from './repositories/identity-theft';
+import { ArangoLevelRepository } from './repositories/level';
+import { ArangoPersonRepository } from './repositories/person';
+import { ArangoSchoolyearRepository } from './repositories/schoolyear';
+import { ArangoSessionRepository } from './repositories/session';
 
-export function createArangoRepositoryInjector(
-  config: Config
-): RepositoryInjector {
+export function createArangoRepositoryInjector(config: Config): Repositories {
   const db = new Database({
     databaseName: config.database.name,
     url: config.database.url,
@@ -33,103 +28,30 @@ export function createArangoRepositoryInjector(
     },
   });
 
-  const databaseInjector = createInjector().provideValue('database', db);
-
-  const arangoInjector = databaseInjector
-    .provideClass(
-      arangoRepositoryTokens.accountRepository,
-      ArangoAccountRepository
-    )
-    .provideClass(
-      arangoRepositoryTokens.accountRepositoryAdapter,
-      ArangoAccountRepositoryAdapter
-    )
-    .provideClass(arangoRepositoryTokens.classRepository, ArangoClassRepository)
-    .provideClass(
-      arangoRepositoryTokens.classRepositoryAdapter,
-      ArangoClassRepositoryAdapter
-    )
-    .provideClass(
-      arangoRepositoryTokens.courseRepository,
-      ArangoCourseRepository
-    )
-    .provideClass(
-      arangoRepositoryTokens.courseRepositoryAdapter,
-      ArangoCourseRepositoryAdapter
-    )
-    .provideClass(
-      arangoRepositoryTokens.identityTheftRepository,
-      ArangoIdentityTheftRepository
-    )
-    .provideClass(
-      arangoRepositoryTokens.identityTheftRepositoryAdapter,
-      ArangoIdentityTheftRepositoryAdapter
-    )
-    .provideClass(arangoRepositoryTokens.levelRepository, ArangoLevelRepository)
-    .provideClass(
-      arangoRepositoryTokens.levelRepositoryAdapter,
-      ArangoLevelRepositoryAdapter
-    )
-    .provideClass(
-      arangoRepositoryTokens.personRepository,
-      ArangoPersonRepository
-    )
-    .provideClass(
-      arangoRepositoryTokens.personRepositoryAdapter,
-      ArangoPersonRepositoryAdapter
-    )
-    .provideClass(
-      arangoRepositoryTokens.schoolyearRepository,
-      ArangoSchoolyearRepository
-    )
-    .provideClass(
-      arangoRepositoryTokens.schoolyearRepositoryAdapter,
-      ArangoSchoolyearRepositoryAdapter
-    )
-    .provideClass(
-      arangoRepositoryTokens.sessionRepository,
-      ArangoSessionRepository
-    )
-    .provideClass(
-      arangoRepositoryTokens.sessionRepositoryAdapter,
-      ArangoSessionRepositoryAdapter
-    );
-
-  const realArangoInjector = createInjector()
-    .provideValue(
-      repositoryTokens.accountRepository,
-      arangoInjector.resolve(arangoRepositoryTokens.accountRepositoryAdapter)
-    )
-    .provideValue(
-      repositoryTokens.classRepository,
-      arangoInjector.resolve(arangoRepositoryTokens.classRepositoryAdapter)
-    )
-    .provideValue(
-      repositoryTokens.courseRepository,
-      arangoInjector.resolve(arangoRepositoryTokens.courseRepositoryAdapter)
-    )
-    .provideValue(
-      repositoryTokens.identityTheftRepository,
-      arangoInjector.resolve(
-        arangoRepositoryTokens.identityTheftRepositoryAdapter
-      )
-    )
-    .provideValue(
-      repositoryTokens.levelRepository,
-      arangoInjector.resolve(arangoRepositoryTokens.levelRepositoryAdapter)
-    )
-    .provideValue(
-      repositoryTokens.personRepository,
-      arangoInjector.resolve(arangoRepositoryTokens.personRepositoryAdapter)
-    )
-    .provideValue(
-      repositoryTokens.schoolyearRepository,
-      arangoInjector.resolve(arangoRepositoryTokens.schoolyearRepositoryAdapter)
-    )
-    .provideValue(
-      repositoryTokens.sessionRepository,
-      arangoInjector.resolve(arangoRepositoryTokens.sessionRepositoryAdapter)
-    );
-
-  return realArangoInjector;
+  return {
+    accountRepository: new ArangoAccountRepositoryAdapter(
+      new ArangoAccountRepository(db)
+    ),
+    classRepository: new ArangoClassRepositoryAdapter(
+      new ArangoClassRepository(db)
+    ),
+    courseRepository: new ArangoCourseRepositoryAdapter(
+      new ArangoCourseRepository(db)
+    ),
+    identityTheftRepository: new ArangoIdentityTheftRepositoryAdapter(
+      new ArangoIdentityTheftRepository(db)
+    ),
+    levelRepository: new ArangoLevelRepositoryAdapter(
+      new ArangoLevelRepository(db)
+    ),
+    personRepository: new ArangoPersonRepositoryAdapter(
+      new ArangoPersonRepository(db)
+    ),
+    schoolyearRepository: new ArangoSchoolyearRepositoryAdapter(
+      new ArangoSchoolyearRepository(db)
+    ),
+    sessionRepository: new ArangoSessionRepositoryAdapter(
+      new ArangoSessionRepository(db)
+    ),
+  };
 }

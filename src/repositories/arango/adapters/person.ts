@@ -1,19 +1,15 @@
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
+import * as js from '#/models/person';
 import { PersonRepository } from '#/repositories/interfaces/person';
-import { ListResult, SearchOptions, TypeFilter, WithId } from '#/services/base';
-import * as js from '#/services/person';
-import { tokens } from 'typed-inject';
 import {
   personFilterToArango,
   personFromArango,
   personToArango,
 } from '../converters/person';
-import { ArangoPersonRepository } from '../services/person';
-import { arangoRepositoryTokens } from '../tokens';
+import { ArangoPersonRepository } from '../repositories/person';
 
 export class ArangoPersonRepositoryAdapter implements PersonRepository {
   constructor(private readonly repository: ArangoPersonRepository) {}
-
-  static readonly inject = tokens(arangoRepositoryTokens.personRepository);
 
   async search(
     options: SearchOptions<js.Person>

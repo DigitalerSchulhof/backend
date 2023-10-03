@@ -1,10 +1,8 @@
-import { CourseRepository } from '#/repositories/interfaces/course';
+import { Course } from '#/models/course';
 import { ClassRepository } from '#/repositories/interfaces/class';
-import { repositoryTokens } from '#/repositories/tokens';
-import { Course } from '#/services/course';
+import { CourseRepository } from '#/repositories/interfaces/course';
 import { IdNotFoundError, InputValidationError } from '#/utils/errors';
-import { tokens } from 'typed-inject';
-import { BaseValidator, aggregateValidationErrors } from './base';
+import { BaseValidator, aggregateValidationErrors } from './utils';
 
 export const CLASS_DOES_NOT_EXIST = 'CLASS_DOES_NOT_EXIST';
 
@@ -15,11 +13,6 @@ export class CourseValidator extends BaseValidator<Course> {
   ) {
     super();
   }
-
-  static readonly inject = tokens(
-    repositoryTokens.courseRepository,
-    repositoryTokens.classRepository
-  );
 
   override async assertCanCreate(data: Course): Promise<void> {
     await aggregateValidationErrors([this.assertClassExists(data.classId)]);

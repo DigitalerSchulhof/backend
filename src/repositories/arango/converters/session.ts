@@ -1,7 +1,7 @@
-import type * as dbBase from '#/repositories/arango/services/base';
-import type * as db from '#/repositories/arango/services/session';
-import type * as jsBase from '#/services/base';
-import * as js from '#/services/session';
+import type * as jsBase from '#/models/base';
+import * as js from '#/models/session';
+import type * as dbBase from '../models/base';
+import type * as db from '../models/session';
 import { dateFromArango, dateToArango, idFromArango } from './base';
 
 export function sessionFromArango(

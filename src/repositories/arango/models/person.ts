@@ -1,5 +1,3 @@
-import { ArangoRepository } from './base';
-
 export type Person = {
   firstname: string;
   lastname: string;
@@ -12,7 +10,3 @@ export type Person = {
 export type PersonType = 'student' | 'teacher' | 'parent' | 'admin' | 'other';
 
 export type PersonGender = 'male' | 'female' | 'other';
-
-export class ArangoPersonRepository extends ArangoRepository<Person> {
-  protected override collectionName = 'persons';
-}

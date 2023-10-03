@@ -1,4 +1,4 @@
-import { IdentityTheft } from '#/services/identity-theft';
+import { IdentityTheft } from '#/models/identity-theft';
 import type { BaseRepository } from './base';
 
 export interface IdentityTheftRepository

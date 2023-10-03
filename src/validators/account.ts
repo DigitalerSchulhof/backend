@@ -1,10 +1,8 @@
+import { Account, AccountSettings } from '#/models/account';
 import { AccountRepository } from '#/repositories/interfaces/account';
 import { PersonRepository } from '#/repositories/interfaces/person';
-import { repositoryTokens } from '#/repositories/tokens';
-import { Account, AccountSettings } from '#/services/account';
 import { IdNotFoundError, InputValidationError } from '#/utils/errors';
-import { tokens } from 'typed-inject';
-import { BaseValidator, aggregateValidationErrors } from './base';
+import { BaseValidator, aggregateValidationErrors } from './utils';
 
 export const MAX_SESSION_TIMEOUT = 300;
 
@@ -24,11 +22,6 @@ export class AccountValidator extends BaseValidator<Account> {
   ) {
     super();
   }
-
-  static readonly inject = tokens(
-    repositoryTokens.accountRepository,
-    repositoryTokens.personRepository
-  );
 
   override async assertCanCreate(data: Account): Promise<void> {
     await aggregateValidationErrors([

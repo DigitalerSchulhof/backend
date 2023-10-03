@@ -1,25 +1,11 @@
-import { ListResult } from '#/services/base';
+import { ListResult, SearchOptions, TypeFilter } from '#/models/base';
 import { Database } from 'arangojs';
 import * as aql from 'arangojs/aql';
 import { DocumentCollection } from 'arangojs/collection';
 import { ArrayCursor } from 'arangojs/cursor';
 import { QueryOptions } from 'arangojs/database';
 import { ArangoError } from 'arangojs/error';
-import { tokens } from 'typed-inject';
-
-export type WithKey<T> = T & {
-  _key: string;
-  _rev: string;
-  createdAt: number;
-  updatedAt: number;
-};
-
-export interface SearchOptions<Base extends object> {
-  limit?: number;
-  offset?: number;
-  filter?: TypeFilter<Base>;
-  order?: string;
-}
+import { WithKey } from '../models/base';
 
 export type Serializable =
   | string
@@ -46,8 +32,6 @@ export abstract class ArangoRepository<
   }
 
   constructor(private readonly db: Database) {}
-
-  static readonly inject = tokens('database');
 
   async search(
     query: SearchOptions<WithKey<Base>>
@@ -227,65 +211,6 @@ export abstract class ArangoRepository<
     throw error;
   }
 }
-
-export type TypeFilter<Type extends object> =
-  | OrFilter<Type>
-  | AndFilter<Type>
-  | Filter<Type>
-  | null;
-
-type OrFilter<Type extends object> = {
-  or: TypeFilter<Type>[];
-};
-
-type AndFilter<Type extends object> = {
-  and: TypeFilter<Type>[];
-};
-
-type Filter<Type extends object> = FilterWorker<Type>;
-
-export type FilterWorker<
-  Type extends object,
-  Path extends string = '',
-> = Type extends unknown
-  ? {
-      [Key in keyof Type & string]: Type[Key] extends
-        | number
-        | string
-        | boolean
-        | null
-        ? FiltersForProperty<`${Path}${Key}`, Type[Key]>
-        : Type[Key] extends object
-        ? FilterWorker<Type[Key], `${Path}${Key}.`>
-        : never;
-    }[keyof Type & string]
-  : never;
-
-type FiltersForProperty<Key, Type> = [Type] extends [number]
-  ?
-      | { property: Key; operator: 'eq' | 'neq' | 'gt' | 'lt'; value: Type }
-      | { property: Key; operator: 'in' | 'nin'; value: Type[] }
-  : [Type] extends [string]
-  ?
-      | {
-          property: Key;
-          operator: 'eq' | 'neq' | 'like' | 'nlike';
-          value: Type;
-        }
-      | { property: Key; operator: 'in' | 'nin'; value: Type[] }
-  : [Type] extends [boolean]
-  ? { property: Key; operator: 'eq' | 'neq'; value: Type }
-  : [Type] extends [number | null]
-  ?
-      | { property: Key; operator: 'eq' | 'neq'; value: Type }
-      | { property: Key; operator: 'in' | 'nin'; value: Type[] }
-  : [Type] extends [string | null]
-  ?
-      | { property: Key; operator: 'eq' | 'neq'; value: Type }
-      | { property: Key; operator: 'in' | 'nin'; value: Type }
-  : [Type] extends [boolean | null]
-  ? { property: Key; operator: 'eq' | 'neq'; value: Type }
-  : never;
 
 export async function paginateCursor<T>(
   cursor: ArrayCursor<T>

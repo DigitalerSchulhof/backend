@@ -1,7 +1,7 @@
-import type * as dbBase from '#/repositories/arango/services/base';
-import type * as db from '#/repositories/arango/services/schoolyear';
-import type * as jsBase from '#/services/base';
-import * as js from '#/services/schoolyear';
+import type * as jsBase from '#/models/base';
+import * as js from '#/models/schoolyear';
+import type * as dbBase from '../models/base';
+import type * as db from '../models/schoolyear';
 import { dateFromArango, dateToArango, idFromArango } from './base';
 
 export function schoolyearFromArango(

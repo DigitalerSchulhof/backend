@@ -1,52 +1,37 @@
+import { ListResult, SearchOptions } from '#/models/base';
 import { IdentityTheftService } from '#/services/identity-theft';
-import { serviceTokens } from '#/services/tokens';
 import {
   Body,
-  Controller,
   Delete,
   Get,
   Patch,
   Path,
   Post,
   Query,
-  Request,
+  Req,
   Route,
   Tags,
-} from 'tsoa';
-import { tokens } from 'typed-inject';
+} from 'bttp';
 import {
   identityTheftFilterFromRest,
   identityTheftFromRest,
   identityTheftToRest,
 } from '../converters/identity-theft';
-import { ListResult, RestContextManager, SearchOptions, WithId } from './base';
-import { restControllerTokens } from './tokens';
-
-export type IdentityTheft = {
-  personId: string;
-  reportedAt: number;
-};
+import { WithId } from '../models/base';
+import { IdentityTheft } from '../models/identity-theft';
+import { RestContextManager } from './base';
 
 @Route('identity-thefts')
 @Tags('Identity Theft')
-export class RestIdentityTheftController extends Controller {
+export class RestIdentityTheftController {
   constructor(
     private readonly contextManager: RestContextManager,
     private readonly service: IdentityTheftService
-  ) {
-    super();
-  }
-
-  static readonly inject = tokens(
-    'contextManager',
-    serviceTokens.identityTheftService
-  );
-
-  static readonly key = restControllerTokens.identityTheftController;
+  ) {}
 
   @Post('search')
   async search(
-    @Request() req: Request,
+    @Req() req: Request,
     @Body() searchOptions: SearchOptions<WithId<IdentityTheft>>
   ): Promise<ListResult<IdentityTheft>> {
     const context = await this.contextManager.get(req);
@@ -67,21 +52,21 @@ export class RestIdentityTheftController extends Controller {
     };
   }
 
-  @Get(':ids')
+  @Get(':id')
   async get(
-    @Request() req: Request,
-    @Path() ids: string
+    @Req() req: Request,
+    @Path() id: string
   ): Promise<(WithId<IdentityTheft> | null)[]> {
     const context = await this.contextManager.get(req);
 
-    const res = await this.service.get(context, ids.split(','));
+    const res = await this.service.get(context, id.split(','));
 
     return res.map((r) => (r === null ? null : identityTheftToRest(r)));
   }
 
   @Post('')
   async create(
-    @Request() req: Request,
+    @Req() req: Request,
     @Body() data: IdentityTheft
   ): Promise<WithId<IdentityTheft>> {
     const context = await this.contextManager.get(req);
@@ -93,7 +78,7 @@ export class RestIdentityTheftController extends Controller {
 
   @Patch(':id')
   async update(
-    @Request() req: Request,
+    @Req() req: Request,
     @Path() id: string,
     @Body() data: Partial<IdentityTheft>,
     @Query() ifRev?: string
@@ -114,7 +99,7 @@ export class RestIdentityTheftController extends Controller {
 
   @Delete(':id')
   async delete(
-    @Request() req: Request,
+    @Req() req: Request,
     @Path() id: string,
     @Query() ifRev?: string
   ): Promise<WithId<IdentityTheft>> {

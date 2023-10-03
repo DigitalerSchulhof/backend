@@ -1,41 +1,9 @@
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
+import { Person } from '#/models/person';
 import { PersonPermissionHandler } from '#/permissions/person';
-import { permissionHandlerTokens } from '#/permissions/tokens';
 import { PersonRepository } from '#/repositories/interfaces/person';
-import { repositoryTokens } from '#/repositories/tokens';
 import { PersonValidator } from '#/validators/person';
-import { validatorTokens } from '#/validators/tokens';
-import { tokens } from 'typed-inject';
-import {
-  BaseService,
-  ListResult,
-  RequestContext,
-  SearchOptions,
-  TypeFilter,
-  WithId,
-} from './base';
-
-export type Person = {
-  firstname: string;
-  lastname: string;
-  type: PersonType;
-  gender: PersonGender;
-  teacherCode: string | null;
-  accountId: string | null;
-};
-
-export enum PersonType {
-  Student,
-  Teacher,
-  Parent,
-  Admin,
-  Other,
-}
-
-export enum PersonGender {
-  Male,
-  Female,
-  Other,
-}
+import { BaseService, RequestContext } from './base';
 
 export class PersonService extends BaseService<Person> {
   constructor(
@@ -45,12 +13,6 @@ export class PersonService extends BaseService<Person> {
   ) {
     super();
   }
-
-  static readonly inject = tokens(
-    repositoryTokens.personRepository,
-    validatorTokens.personValidator,
-    permissionHandlerTokens.personPermissionHandler
-  );
 
   override async search(
     context: RequestContext,

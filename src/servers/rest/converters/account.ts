@@ -1,4 +1,5 @@
 import * as js from '#/services/account';
+import * as Account from '#/services/Account';
 import type * as jsBase from '#/services/base';
 import { ClientFilterError } from '#/utils/errors';
 import type * as rest from '../controllers/account-controller';
@@ -92,9 +93,9 @@ function formOfAddressToRest(
   formOfAddress: js.FormOfAddress
 ): rest.FormOfAddress {
   switch (formOfAddress) {
-    case js.FormOfAddress.Formal:
+    case Account.FormOfAddress.Formal:
       return 'formal';
-    case js.FormOfAddress.Informal:
+    case Account.FormOfAddress.Informal:
       return 'informal';
   }
 }
@@ -198,9 +199,9 @@ function formOfAddressFromRest(
 ): js.FormOfAddress {
   switch (formOfAddress) {
     case 'formal':
-      return js.FormOfAddress.Formal;
+      return Account.FormOfAddress.Formal;
     case 'informal':
-      return js.FormOfAddress.Informal;
+      return Account.FormOfAddress.Informal;
   }
 }
 

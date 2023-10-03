@@ -1,5 +1,3 @@
-import { ArangoRepository } from './base';
-
 export type Account = {
   personId: string;
   username: string;
@@ -44,7 +42,3 @@ export type AccountSettingsProfile = {
 };
 
 export type FormOfAddress = 'formal' | 'informal';
-
-export class ArangoAccountRepository extends ArangoRepository<Account> {
-  protected override collectionName = 'accounts';
-}

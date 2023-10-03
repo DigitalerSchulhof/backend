@@ -1,53 +1,37 @@
+import { ListResult, SearchOptions } from '#/models/base';
 import { SessionService } from '#/services/session';
-import { serviceTokens } from '#/services/tokens';
 import {
   Body,
-  Controller,
   Delete,
   Get,
   Patch,
   Path,
   Post,
   Query,
-  Request,
+  Req,
   Route,
   Tags,
-} from 'tsoa';
-import { tokens } from 'typed-inject';
+} from 'bttp';
 import {
   sessionFilterFromRest,
   sessionFromRest,
   sessionToRest,
 } from '../converters/session';
-import { ListResult, RestContextManager, SearchOptions, WithId } from './base';
-import { restControllerTokens } from './tokens';
-
-export type Session = {
-  accountId: string;
-  issuedAt: number;
-  didShowLastLogin: boolean;
-};
+import { WithId } from '../models/base';
+import { Session } from '../models/session';
+import { RestContextManager } from './base';
 
 @Route('sessions')
 @Tags('Session')
-export class RestSessionController extends Controller {
+export class RestSessionController {
   constructor(
     private readonly contextManager: RestContextManager,
     private readonly service: SessionService
-  ) {
-    super();
-  }
-
-  static readonly inject = tokens(
-    'contextManager',
-    serviceTokens.sessionService
-  );
-
-  static readonly key = restControllerTokens.sessionController;
+  ) {}
 
   @Post('search')
   async search(
-    @Request() req: Request,
+    @Req() req: Request,
     @Body() searchOptions: SearchOptions<WithId<Session>>
   ): Promise<ListResult<Session>> {
     const context = await this.contextManager.get(req);
@@ -68,21 +52,21 @@ export class RestSessionController extends Controller {
     };
   }
 
-  @Get(':ids')
+  @Get(':id')
   async get(
-    @Request() req: Request,
-    @Path() ids: string
+    @Req() req: Request,
+    @Path() id: string
   ): Promise<(WithId<Session> | null)[]> {
     const context = await this.contextManager.get(req);
 
-    const res = await this.service.get(context, ids.split(','));
+    const res = await this.service.get(context, id.split(','));
 
     return res.map((r) => (r === null ? null : sessionToRest(r)));
   }
 
   @Post('')
   async create(
-    @Request() req: Request,
+    @Req() req: Request,
     @Body() data: Session
   ): Promise<WithId<Session>> {
     const context = await this.contextManager.get(req);
@@ -94,7 +78,7 @@ export class RestSessionController extends Controller {
 
   @Patch(':id')
   async update(
-    @Request() req: Request,
+    @Req() req: Request,
     @Path() id: string,
     @Body() data: Partial<Session>,
     @Query() ifRev?: string
@@ -110,7 +94,7 @@ export class RestSessionController extends Controller {
 
   @Delete(':id')
   async delete(
-    @Request() req: Request,
+    @Req() req: Request,
     @Path() id: string,
     @Query() ifRev?: string
   ): Promise<WithId<Session>> {

@@ -1,19 +1,15 @@
+import * as js from '#/models/account';
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
 import { AccountRepository } from '#/repositories/interfaces/account';
-import * as js from '#/services/account';
-import { ListResult, SearchOptions, TypeFilter, WithId } from '#/services/base';
-import { tokens } from 'typed-inject';
 import {
   accountFilterToArango,
   accountFromArango,
   accountToArango,
 } from '../converters/account';
-import { ArangoAccountRepository } from '../services/account';
-import { arangoRepositoryTokens } from '../tokens';
+import { ArangoAccountRepository } from '../repositories/account';
 
 export class ArangoAccountRepositoryAdapter implements AccountRepository {
   constructor(private readonly repository: ArangoAccountRepository) {}
-
-  static readonly inject = tokens(arangoRepositoryTokens.accountRepository);
 
   async search(
     options: SearchOptions<js.Account>

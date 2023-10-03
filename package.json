@@ -14,7 +14,6 @@
     "@stricjs/router": "^4.2.4",
     "arangojs": "8.4.0",
     "ms": "2.1.3",
-    "tsoa": "^5.1.1",
     "typed-inject": "3.0.1",
     "vality": "6.3.3",
     "vality-env": "1.0.1"

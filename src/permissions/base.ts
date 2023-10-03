@@ -1,29 +1,24 @@
-import { RequestContext, SearchOptions } from '#/services/base';
+import { SearchOptions } from '#/models/base';
+import { RequestContext } from '#/services/base';
 
 export abstract class BasePermissionHandler<Base extends object> {
-  abstract assertMaySearch(
+  async assertMaySearch(
     context: RequestContext,
     options?: SearchOptions<Base>
-  ): Promise<void | never>;
+  ): Promise<void> {}
 
-  abstract assertMayGet(
+  async assertMayGet(
     context: RequestContext,
     ids: readonly string[]
-  ): Promise<void | never>;
+  ): Promise<void> {}
 
-  abstract assertMayCreate(
-    context: RequestContext,
-    data: Base
-  ): Promise<void | never>;
+  async assertMayCreate(context: RequestContext, data: Base): Promise<void> {}
 
-  abstract assertMayUpdate(
+  async assertMayUpdate(
     context: RequestContext,
     id: string,
     data: Partial<Base>
-  ): Promise<void | never>;
+  ): Promise<void> {}
 
-  abstract assertMayDelete(
-    context: RequestContext,
-    id: string
-  ): Promise<void | never>;
+  async assertMayDelete(context: RequestContext, id: string): Promise<void> {}
 }

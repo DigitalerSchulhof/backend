@@ -1,19 +1,15 @@
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
+import * as js from '#/models/course';
 import { CourseRepository } from '#/repositories/interfaces/course';
-import { ListResult, SearchOptions, TypeFilter, WithId } from '#/services/base';
-import * as js from '#/services/course';
-import { tokens } from 'typed-inject';
 import {
   courseFilterToArango,
   courseFromArango,
   courseToArango,
 } from '../converters/course';
-import { ArangoCourseRepository } from '../services/course';
-import { arangoRepositoryTokens } from '../tokens';
+import { ArangoCourseRepository } from '../repositories/course';
 
 export class ArangoCourseRepositoryAdapter implements CourseRepository {
   constructor(private readonly repository: ArangoCourseRepository) {}
-
-  static readonly inject = tokens(arangoRepositoryTokens.courseRepository);
 
   async search(
     options: SearchOptions<js.Course>

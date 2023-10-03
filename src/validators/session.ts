@@ -1,10 +1,8 @@
+import { Session } from '#/models/session';
 import { AccountRepository } from '#/repositories/interfaces/account';
 import { SessionRepository } from '#/repositories/interfaces/session';
-import { repositoryTokens } from '#/repositories/tokens';
-import { Session } from '#/services/session';
 import { IdNotFoundError, InputValidationError } from '#/utils/errors';
-import { tokens } from 'typed-inject';
-import { BaseValidator, aggregateValidationErrors } from './base';
+import { BaseValidator, aggregateValidationErrors } from './utils';
 
 export const Account_DOES_NOT_EXIST = 'Account_DOES_NOT_EXIST';
 
@@ -15,11 +13,6 @@ export class SessionValidator extends BaseValidator<Session> {
   ) {
     super();
   }
-
-  static readonly inject = tokens(
-    repositoryTokens.sessionRepository,
-    repositoryTokens.accountRepository
-  );
 
   override async assertCanCreate(data: Session): Promise<void> {
     await aggregateValidationErrors([this.assertAccountExists(data.accountId)]);

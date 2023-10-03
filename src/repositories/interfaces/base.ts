@@ -1,4 +1,4 @@
-import { ListResult, SearchOptions, TypeFilter, WithId } from '#/services/base';
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
 
 export interface BaseRepository<Base extends object> {
   search(options: SearchOptions<Base>): Promise<ListResult<WithId<Base>>>;

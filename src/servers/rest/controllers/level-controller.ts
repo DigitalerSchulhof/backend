@@ -1,49 +1,37 @@
+import { ListResult, SearchOptions } from '#/models/base';
 import { LevelService } from '#/services/level';
-import { serviceTokens } from '#/services/tokens';
 import {
   Body,
-  Controller,
   Delete,
   Get,
   Patch,
   Path,
   Post,
   Query,
-  Request,
+  Req,
   Route,
   Tags,
-} from 'tsoa';
-import { tokens } from 'typed-inject';
+} from 'bttp';
 import {
   levelFilterFromRest,
   levelFromRest,
   levelToRest,
 } from '../converters/level';
-import { ListResult, RestContextManager, SearchOptions, WithId } from './base';
-import { restControllerTokens } from './tokens';
-
-export type Level = {
-  name: string;
-  schoolyearId: string;
-};
+import { WithId } from '../models/base';
+import { Level } from '../models/level';
+import { RestContextManager } from './base';
 
 @Route('levels')
 @Tags('Level')
-export class RestLevelController extends Controller {
+export class RestLevelController {
   constructor(
     private readonly contextManager: RestContextManager,
     private readonly service: LevelService
-  ) {
-    super();
-  }
-
-  static readonly inject = tokens('contextManager', serviceTokens.levelService);
-
-  static readonly key = restControllerTokens.levelController;
+  ) {}
 
   @Post('search')
   async search(
-    @Request() req: Request,
+    @Req() req: Request,
     @Body() searchOptions: SearchOptions<WithId<Level>>
   ): Promise<ListResult<Level>> {
     const context = await this.contextManager.get(req);
@@ -64,21 +52,21 @@ export class RestLevelController extends Controller {
     };
   }
 
-  @Get(':ids')
+  @Get(':id')
   async get(
-    @Request() req: Request,
-    @Path() ids: string
+    @Req() req: Request,
+    @Path() id: string
   ): Promise<(WithId<Level> | null)[]> {
     const context = await this.contextManager.get(req);
 
-    const res = await this.service.get(context, ids.split(','));
+    const res = await this.service.get(context, id.split(','));
 
     return res.map((r) => (r === null ? null : levelToRest(r)));
   }
 
   @Post('')
   async create(
-    @Request() req: Request,
+    @Req() req: Request,
     @Body() data: Level
   ): Promise<WithId<Level>> {
     const context = await this.contextManager.get(req);
@@ -90,7 +78,7 @@ export class RestLevelController extends Controller {
 
   @Patch(':id')
   async update(
-    @Request() req: Request,
+    @Req() req: Request,
     @Path() id: string,
     @Body() data: Partial<Level>,
     @Query() ifRev?: string
@@ -106,7 +94,7 @@ export class RestLevelController extends Controller {
 
   @Delete(':id')
   async delete(
-    @Request() req: Request,
+    @Req() req: Request,
     @Path() id: string,
     @Query() ifRev?: string
   ): Promise<WithId<Level>> {

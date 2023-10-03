@@ -1,66 +1,9 @@
+import { Account } from '#/models/account';
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
 import { AccountPermissionHandler } from '#/permissions/account';
-import { permissionHandlerTokens } from '#/permissions/tokens';
 import { AccountRepository } from '#/repositories/interfaces/account';
-import { repositoryTokens } from '#/repositories/tokens';
 import { AccountValidator } from '#/validators/account';
-import { validatorTokens } from '#/validators/tokens';
-import { tokens } from 'typed-inject';
-import {
-  BaseService,
-  ListResult,
-  RequestContext,
-  SearchOptions,
-  TypeFilter,
-  WithId,
-} from './base';
-
-export type Account = {
-  personId: string;
-  username: string;
-  email: string;
-  password: Buffer;
-  salt: Buffer;
-  passwordExpiresAt: Date | null;
-  lastLogin: Date | null;
-  secondLastLogin: Date | null;
-  settings: AccountSettings;
-};
-
-export type AccountSettings = {
-  emailOn: AccountSettingsNotifyOn;
-  pushOn: AccountSettingsNotifyOn;
-  considerNews: AccountSettingsConsiderNews;
-  mailbox: AccountSettingsMailbox;
-  profile: AccountSettingsProfile;
-};
-
-export type AccountSettingsNotifyOn = {
-  newMessage: boolean;
-  newSubstitution: boolean;
-  newNews: boolean;
-};
-
-export type AccountSettingsConsiderNews = {
-  newEvent: boolean;
-  newBlog: boolean;
-  newGallery: boolean;
-  fileChanged: boolean;
-};
-
-export type AccountSettingsMailbox = {
-  deleteAfter: number | null;
-  deleteAfterInBin: number | null;
-};
-
-export type AccountSettingsProfile = {
-  sessionTimeout: number;
-  formOfAddress: FormOfAddress;
-};
-
-export enum FormOfAddress {
-  Formal,
-  Informal,
-}
+import { BaseService, RequestContext } from './base';
 
 export class AccountService extends BaseService<Account> {
   constructor(
@@ -70,12 +13,6 @@ export class AccountService extends BaseService<Account> {
   ) {
     super();
   }
-
-  static readonly inject = tokens(
-    repositoryTokens.accountRepository,
-    validatorTokens.accountValidator,
-    permissionHandlerTokens.accountPermissionHandler
-  );
 
   override async search(
     context: RequestContext,

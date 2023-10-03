@@ -1,19 +1,15 @@
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
+import * as js from '#/models/level';
 import { LevelRepository } from '#/repositories/interfaces/level';
-import { ListResult, SearchOptions, TypeFilter, WithId } from '#/services/base';
-import * as js from '#/services/level';
-import { tokens } from 'typed-inject';
 import {
   levelFilterToArango,
   levelFromArango,
   levelToArango,
 } from '../converters/level';
-import { ArangoLevelRepository } from '../services/level';
-import { arangoRepositoryTokens } from '../tokens';
+import { ArangoLevelRepository } from '../repositories/level';
 
 export class ArangoLevelRepositoryAdapter implements LevelRepository {
   constructor(private readonly repository: ArangoLevelRepository) {}
-
-  static readonly inject = tokens(arangoRepositoryTokens.levelRepository);
 
   async search(
     options: SearchOptions<js.Level>

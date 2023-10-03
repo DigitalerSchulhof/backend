@@ -1,60 +1,37 @@
+import { ListResult, SearchOptions } from '#/models/base';
 import { PersonService } from '#/services/person';
-import { serviceTokens } from '#/services/tokens';
 import {
   Body,
-  Controller,
   Delete,
   Get,
   Patch,
   Path,
   Post,
   Query,
-  Request,
+  Req,
   Route,
   Tags,
-} from 'tsoa';
-import { tokens } from 'typed-inject';
+} from 'bttp';
 import {
   personFilterFromRest,
   personFromRest,
   personToRest,
 } from '../converters/person';
-import { ListResult, RestContextManager, SearchOptions, WithId } from './base';
-import { restControllerTokens } from './tokens';
-
-export type Person = {
-  firstname: string;
-  lastname: string;
-  type: PersonType;
-  gender: PersonGender;
-  teacherCode: string | null;
-  accountId: string | null;
-};
-
-export type PersonType = 'student' | 'teacher' | 'parent' | 'admin' | 'other';
-
-export type PersonGender = 'male' | 'female' | 'other';
+import { WithId } from '../models/base';
+import { Person } from '../models/person';
+import { RestContextManager } from './base';
 
 @Route('persons')
 @Tags('Person')
-export class RestPersonController extends Controller {
+export class RestPersonController {
   constructor(
     private readonly contextManager: RestContextManager,
     private readonly service: PersonService
-  ) {
-    super();
-  }
-
-  static readonly inject = tokens(
-    'contextManager',
-    serviceTokens.personService
-  );
-
-  static readonly key = restControllerTokens.personController;
+  ) {}
 
   @Post('search')
   async search(
-    @Request() req: Request,
+    @Req() req: Request,
     @Body() searchOptions: SearchOptions<WithId<Person>>
   ): Promise<ListResult<Person>> {
     const context = await this.contextManager.get(req);
@@ -75,21 +52,21 @@ export class RestPersonController extends Controller {
     };
   }
 
-  @Get(':ids')
+  @Get(':id')
   async get(
-    @Request() req: Request,
-    @Path() ids: string
+    @Req() req: Request,
+    @Path() id: string
   ): Promise<(WithId<Person> | null)[]> {
     const context = await this.contextManager.get(req);
 
-    const res = await this.service.get(context, ids.split(','));
+    const res = await this.service.get(context, id.split(','));
 
     return res.map((r) => (r === null ? null : personToRest(r)));
   }
 
   @Post('')
   async create(
-    @Request() req: Request,
+    @Req() req: Request,
     @Body() data: Person
   ): Promise<WithId<Person>> {
     const context = await this.contextManager.get(req);
@@ -101,7 +78,7 @@ export class RestPersonController extends Controller {
 
   @Patch(':id')
   async update(
-    @Request() req: Request,
+    @Req() req: Request,
     @Path() id: string,
     @Body() data: Partial<Person>,
     @Query() ifRev?: string
@@ -117,7 +94,7 @@ export class RestPersonController extends Controller {
 
   @Delete(':id')
   async delete(
-    @Request() req: Request,
+    @Req() req: Request,
     @Path() id: string,
     @Query() ifRev?: string
   ): Promise<WithId<Person>> {

@@ -1,19 +1,15 @@
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
+import * as js from '#/models/class';
 import { ClassRepository } from '#/repositories/interfaces/class';
-import { ListResult, SearchOptions, TypeFilter, WithId } from '#/services/base';
-import * as js from '#/services/class';
-import { tokens } from 'typed-inject';
 import {
   classFilterToArango,
   classFromArango,
   classToArango,
 } from '../converters/class';
-import { ArangoClassRepository } from '../services/class';
-import { arangoRepositoryTokens } from '../tokens';
+import { ArangoClassRepository } from '../repositories/class';
 
 export class ArangoClassRepositoryAdapter implements ClassRepository {
   constructor(private readonly repository: ArangoClassRepository) {}
-
-  static readonly inject = tokens(arangoRepositoryTokens.classRepository);
 
   async search(
     options: SearchOptions<js.Class>

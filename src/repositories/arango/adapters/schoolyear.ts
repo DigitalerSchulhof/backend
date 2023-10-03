@@ -1,19 +1,15 @@
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
+import * as js from '#/models/schoolyear';
 import { SchoolyearRepository } from '#/repositories/interfaces/schoolyear';
-import { ListResult, SearchOptions, TypeFilter, WithId } from '#/services/base';
-import * as js from '#/services/schoolyear';
-import { tokens } from 'typed-inject';
 import {
   schoolyearFilterToArango,
   schoolyearFromArango,
   schoolyearToArango,
 } from '../converters/schoolyear';
-import { ArangoSchoolyearRepository } from '../services/schoolyear';
-import { arangoRepositoryTokens } from '../tokens';
+import { ArangoSchoolyearRepository } from '../repositories/schoolyear';
 
 export class ArangoSchoolyearRepositoryAdapter implements SchoolyearRepository {
   constructor(private readonly repository: ArangoSchoolyearRepository) {}
-
-  static readonly inject = tokens(arangoRepositoryTokens.schoolyearRepository);
 
   async search(
     options: SearchOptions<js.Schoolyear>

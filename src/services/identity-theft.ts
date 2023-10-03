@@ -1,23 +1,9 @@
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
+import { IdentityTheft } from '#/models/identity-theft';
 import { IdentityTheftPermissionHandler } from '#/permissions/identity-theft';
-import { permissionHandlerTokens } from '#/permissions/tokens';
 import { IdentityTheftRepository } from '#/repositories/interfaces/identity-theft';
-import { repositoryTokens } from '#/repositories/tokens';
 import { IdentityTheftValidator } from '#/validators/identity-theft';
-import { validatorTokens } from '#/validators/tokens';
-import { tokens } from 'typed-inject';
-import {
-  BaseService,
-  ListResult,
-  RequestContext,
-  SearchOptions,
-  TypeFilter,
-  WithId,
-} from './base';
-
-export type IdentityTheft = {
-  personId: string;
-  reportedAt: Date;
-};
+import { BaseService, RequestContext } from './base';
 
 export class IdentityTheftService extends BaseService<IdentityTheft> {
   constructor(
@@ -27,12 +13,6 @@ export class IdentityTheftService extends BaseService<IdentityTheft> {
   ) {
     super();
   }
-
-  static readonly inject = tokens(
-    repositoryTokens.identityTheftRepository,
-    validatorTokens.identityTheftValidator,
-    permissionHandlerTokens.identityTheftPermissionHandler
-  );
 
   override async search(
     context: RequestContext,

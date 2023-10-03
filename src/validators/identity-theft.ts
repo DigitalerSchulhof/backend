@@ -1,10 +1,8 @@
+import { IdentityTheft } from '#/models/identity-theft';
 import { IdentityTheftRepository } from '#/repositories/interfaces/identity-theft';
 import { PersonRepository } from '#/repositories/interfaces/person';
-import { repositoryTokens } from '#/repositories/tokens';
-import { IdentityTheft } from '#/services/identity-theft';
 import { IdNotFoundError, InputValidationError } from '#/utils/errors';
-import { tokens } from 'typed-inject';
-import { BaseValidator, aggregateValidationErrors } from './base';
+import { BaseValidator, aggregateValidationErrors } from './utils';
 
 export const PERSON_DOES_NOT_EXIST = 'PERSON_DOES_NOT_EXIST';
 
@@ -15,11 +13,6 @@ export class IdentityTheftValidator extends BaseValidator<IdentityTheft> {
   ) {
     super();
   }
-
-  static readonly inject = tokens(
-    repositoryTokens.identityTheftRepository,
-    repositoryTokens.personRepository
-  );
 
   override async assertCanCreate(data: IdentityTheft): Promise<void> {
     await aggregateValidationErrors([this.assertPersonExists(data.personId)]);

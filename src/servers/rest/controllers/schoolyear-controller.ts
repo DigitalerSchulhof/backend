@@ -1,53 +1,37 @@
+import { ListResult, SearchOptions } from '#/models/base';
 import { SchoolyearService } from '#/services/schoolyear';
-import { serviceTokens } from '#/services/tokens';
 import {
   Body,
-  Controller,
   Delete,
   Get,
   Patch,
   Path,
   Post,
   Query,
-  Request,
+  Req,
   Route,
   Tags,
-} from 'tsoa';
-import { tokens } from 'typed-inject';
+} from 'bttp';
 import {
   schoolyearFilterFromRest,
   schoolyearFromRest,
   schoolyearToRest,
 } from '../converters/schoolyear';
-import { ListResult, RestContextManager, SearchOptions, WithId } from './base';
-import { restControllerTokens } from './tokens';
-
-export type Schoolyear = {
-  name: string;
-  start: number;
-  end: number;
-};
+import { WithId } from '../models/base';
+import { Schoolyear } from '../models/schoolyear';
+import { RestContextManager } from './base';
 
 @Route('schoolyears')
 @Tags('Schoolyear')
-export class RestSchoolyearController extends Controller {
+export class RestSchoolyearController {
   constructor(
     private readonly contextManager: RestContextManager,
     private readonly service: SchoolyearService
-  ) {
-    super();
-  }
-
-  static readonly inject = tokens(
-    'contextManager',
-    serviceTokens.schoolyearService
-  );
-
-  static readonly key = restControllerTokens.schoolyearController;
+  ) {}
 
   @Post('search')
   async search(
-    @Request() req: Request,
+    @Req() req: Request,
     @Body() searchOptions: SearchOptions<WithId<Schoolyear>>
   ): Promise<ListResult<Schoolyear>> {
     const context = await this.contextManager.get(req);
@@ -68,21 +52,21 @@ export class RestSchoolyearController extends Controller {
     };
   }
 
-  @Get(':ids')
+  @Get(':id')
   async get(
-    @Request() req: Request,
-    @Path() ids: string
+    @Req() req: Request,
+    @Path() id: string
   ): Promise<(WithId<Schoolyear> | null)[]> {
     const context = await this.contextManager.get(req);
 
-    const res = await this.service.get(context, ids.split(','));
+    const res = await this.service.get(context, id.split(','));
 
     return res.map((r) => (r === null ? null : schoolyearToRest(r)));
   }
 
   @Post('')
   async create(
-    @Request() req: Request,
+    @Req() req: Request,
     @Body() data: Schoolyear
   ): Promise<WithId<Schoolyear>> {
     const context = await this.contextManager.get(req);
@@ -94,7 +78,7 @@ export class RestSchoolyearController extends Controller {
 
   @Patch(':id')
   async update(
-    @Request() req: Request,
+    @Req() req: Request,
     @Path() id: string,
     @Body() data: Partial<Schoolyear>,
     @Query() ifRev?: string
@@ -115,7 +99,7 @@ export class RestSchoolyearController extends Controller {
 
   @Delete(':id')
   async delete(
-    @Request() req: Request,
+    @Req() req: Request,
     @Path() id: string,
     @Query() ifRev?: string
   ): Promise<WithId<Schoolyear>> {

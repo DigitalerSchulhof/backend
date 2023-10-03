@@ -1,23 +1,9 @@
+import { ListResult, SearchOptions, TypeFilter, WithId } from '#/models/base';
+import { Course } from '#/models/course';
 import { CoursePermissionHandler } from '#/permissions/course';
-import { permissionHandlerTokens } from '#/permissions/tokens';
 import { CourseRepository } from '#/repositories/interfaces/course';
-import { repositoryTokens } from '#/repositories/tokens';
 import { CourseValidator } from '#/validators/course';
-import { validatorTokens } from '#/validators/tokens';
-import { tokens } from 'typed-inject';
-import {
-  BaseService,
-  ListResult,
-  RequestContext,
-  SearchOptions,
-  TypeFilter,
-  WithId,
-} from './base';
-
-export type Course = {
-  name: string;
-  classId: string;
-};
+import { BaseService, RequestContext } from './base';
 
 export class CourseService extends BaseService<Course> {
   constructor(
@@ -27,12 +13,6 @@ export class CourseService extends BaseService<Course> {
   ) {
     super();
   }
-
-  static readonly inject = tokens(
-    repositoryTokens.courseRepository,
-    validatorTokens.courseValidator,
-    permissionHandlerTokens.coursePermissionHandler
-  );
 
   override async search(
     context: RequestContext,

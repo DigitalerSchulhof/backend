@@ -1,4 +1,3 @@
-import { Injector, createInjector } from 'typed-inject';
 import { AccountPermissionHandler } from './account';
 import { ClassPermissionHandler } from './class';
 import { CoursePermissionHandler } from './course';
@@ -7,51 +6,27 @@ import { LevelPermissionHandler } from './level';
 import { PersonPermissionHandler } from './person';
 import { SchoolyearPermissionHandler } from './schoolyear';
 import { SessionPermissionHandler } from './session';
-import { permissionHandlerTokens } from './tokens';
 
-export function createPermissionHandlerInjector(): PermissionHandlerInjector {
-  return createInjector()
-    .provideClass(
-      permissionHandlerTokens.accountPermissionHandler,
-      AccountPermissionHandler
-    )
-    .provideClass(
-      permissionHandlerTokens.classPermissionHandler,
-      ClassPermissionHandler
-    )
-    .provideClass(
-      permissionHandlerTokens.coursePermissionHandler,
-      CoursePermissionHandler
-    )
-    .provideClass(
-      permissionHandlerTokens.identityTheftPermissionHandler,
-      IdentityTheftPermissionHandler
-    )
-    .provideClass(
-      permissionHandlerTokens.levelPermissionHandler,
-      LevelPermissionHandler
-    )
-    .provideClass(
-      permissionHandlerTokens.personPermissionHandler,
-      PersonPermissionHandler
-    )
-    .provideClass(
-      permissionHandlerTokens.schoolyearPermissionHandler,
-      SchoolyearPermissionHandler
-    )
-    .provideClass(
-      permissionHandlerTokens.sessionPermissionHandler,
-      SessionPermissionHandler
-    );
+export function createPermissionHandlerInjector(): PermissionHandlers {
+  return {
+    accountPermissionHandler: new AccountPermissionHandler(),
+    classPermissionHandler: new ClassPermissionHandler(),
+    coursePermissionHandler: new CoursePermissionHandler(),
+    identityTheftPermissionHandler: new IdentityTheftPermissionHandler(),
+    levelPermissionHandler: new LevelPermissionHandler(),
+    personPermissionHandler: new PersonPermissionHandler(),
+    schoolyearPermissionHandler: new SchoolyearPermissionHandler(),
+    sessionPermissionHandler: new SessionPermissionHandler(),
+  };
 }
 
-export type PermissionHandlerInjector = Injector<{
-  [permissionHandlerTokens.accountPermissionHandler]: AccountPermissionHandler;
-  [permissionHandlerTokens.classPermissionHandler]: ClassPermissionHandler;
-  [permissionHandlerTokens.coursePermissionHandler]: CoursePermissionHandler;
-  [permissionHandlerTokens.identityTheftPermissionHandler]: IdentityTheftPermissionHandler;
-  [permissionHandlerTokens.levelPermissionHandler]: LevelPermissionHandler;
-  [permissionHandlerTokens.personPermissionHandler]: PersonPermissionHandler;
-  [permissionHandlerTokens.schoolyearPermissionHandler]: SchoolyearPermissionHandler;
-  [permissionHandlerTokens.sessionPermissionHandler]: SessionPermissionHandler;
-}>;
+export type PermissionHandlers = {
+  accountPermissionHandler: AccountPermissionHandler;
+  classPermissionHandler: ClassPermissionHandler;
+  coursePermissionHandler: CoursePermissionHandler;
+  identityTheftPermissionHandler: IdentityTheftPermissionHandler;
+  levelPermissionHandler: LevelPermissionHandler;
+  personPermissionHandler: PersonPermissionHandler;
+  schoolyearPermissionHandler: SchoolyearPermissionHandler;
+  sessionPermissionHandler: SessionPermissionHandler;
+};
